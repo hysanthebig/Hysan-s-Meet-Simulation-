@@ -22,6 +22,148 @@ pd.set_option('display.max_columns',None)
 pd.set_option('display.width',None)
 pd.set_option('display.max_rows',None)
 
+
+# Helper: convert mm:ss string to total seconds
+def time_to_seconds(time_str):
+  minutes, seconds = time_str.split(":")
+  return int(minutes) * 60 + float(seconds)
+
+  # Helper: average split per distance in minutes:seconds
+def avg_split(time_str, distance_meters):
+    total_seconds = time_to_seconds(time_str)
+    avg_sec = total_seconds / (distance_meters / 1609.34)  # convert meters to miles if needed
+    minutes = int(avg_sec // 60)
+    seconds = int(round(avg_sec % 60))
+    return f"{minutes}:{seconds:02d}"
+
+# ====== Parsing HTML ======
+def get_html(url):
+  r = requests.get(url)
+  r.raise_for_status()
+  return r.text
+
+def parse_html(html):
+  soup = BeautifulSoup(html, "html.parser")
+  text = soup.get_text("\n")
+  lines = [line.strip() for line in text.splitlines() if line.strip()]
+
+  print(text)
+
+  records = []
+  current_event = None
+  current_race_type = None
+  current_distance = None
+  current_event_number = None
+
+  # Event header regex
+
+
+
+  # Runner regex
+  runner_regex = re.compile(
+    r"(?P<place>\d+)\s+"
+    r"(?P<name>[A-Z][a-zA-Z ,\-\(\)']+?)\s+"
+    r"(?P<grade>\d{1,2})\s+"
+    r"(?P<team>.+?)\s+"
+    r"(?P<time>\d+:\d+\.\d+)"
+  )
+
+  for line in lines:
+    # Check for event header
+
+
+      # Check for runner row
+    m = runner_regex.search(line)
+    if m and current_event:
+      records.append({
+        "Placement": int(m.group("place")),
+        "Runner": m.group("name").strip(),
+        "Grade": int(m.group("grade")),
+        "School": m.group("team").strip(),
+        "Time": m.group("time"),
+        "EventID": current_event,
+        "RaceType": current_race_type,
+        "Length": current_distance
+      })
+
+  df = pd.DataFrame(records)
+  def flip_name(name):
+    if "," in name:
+      last, first = name.split(",", 1)
+      return f"{first.strip()} {last.strip()}"
+    return name
+
+  df['Runner'] = df['Runner'].apply(flip_name)
+  print(df)
+
+  lines = [line.strip() for line in soup.get_text("\n").split("\n") if line.strip()]
+  
+  # Print lines with index so you can see structure
+  for i, line in enumerate(lines[:20]):  # first 20 lines
+      print(i, line)
+  
+  # ---- ADJUST THESE AFTER YOU CHECK OUTPUT ----
+  race_name = lines[1]
+
+  month_pattern = r'(January|February|March|April|May|June|July|August|September|October|November|December)'
+  
+  date_line = None
+  
+  for line in lines:
+    if re.search(month_pattern, line):
+      date_line = line
+      break
+  
+
+  month_map = {
+    "January": "1", "February": "2", "March": "3", "April": "4",
+    "May": "5", "June": "6", "July": "7", "August": "8",
+    "September": "9", "October": "10", "November": "11", "December": "12"
+  }
+  race_date = None
+  
+  if date_line:
+    match = re.search(rf'{month_pattern}\s+(\d{{1,2}}),\s*(\d{{4}})', date_line)
+    if match:
+      month, day, year = match.groups()
+      race_date = f"{month_map[month]}/{int(day)}/{year}"
+
+  return df,race_date,race_name
+
+
+
+  # ====== Placement / School Filter ======
+def compute_school_placement(df_full, school_name):
+    totals = df_full.groupby("EventID")["Placement"].max()
+    df_school = df_full[df_full["School"].str.lower().isin(SCHOOL_NAME)].copy()
+    df_school["Placement"] = df_school.apply(
+      lambda r: f"{r['Placement']}/{totals[r['EventID']]}",
+      axis=1
+    )
+    return df_school
+
+# ====== Reformat Columns for CSV ======
+def format_for_csv(df_school,MEET_NAME,MEET_DATE, race_distance_meters=1600):
+  df = df_school.copy()
+  df["Race"] = MEET_NAME
+  df["Date"] = MEET_DATE
+  df["Sport"] = SPORT
+  df["Avr_splits"] = df["Time"].apply(lambda t: avg_split(t, race_distance_meters))
+  df["Date_dt"] = pd.to_datetime(df["Date"])
+  df["time_seconds"] = df["Time"].apply(time_to_seconds)
+
+
+  # Reorder columns
+  df = df[["School","Runner", "Race", "Placement", "Grade", "Time",
+           "Avr_splits", "Date", "Length", "RaceType", "Sport",
+           "Date_dt", "time_seconds"]]
+
+  print(df.head())
+  return df
+
+
+#######################++++++++++++++++++++++++++++++++++++++++++++++++++above is html to take for data, below is filitering to keep faster time
+
 def tabler(rows):
   data_list = []
   for r in rows:
@@ -41,7 +183,7 @@ def tabler(rows):
     })
   df = pd.DataFrame(data_list)
   return df
-  
+
 def table_into_df(sport):
   if sport == "XC":
     rows = app_tables.datatable.search()
@@ -98,172 +240,17 @@ def pr_display(df,runnerlist,lengthlist,gradelist):
   pr_rows = df_pr[df_pr["time_seconds"] == df_pr["Runner"].map(pr_df)]
   return(pr_rows)
 
-
-# Helper: convert mm:ss string to total seconds
-def time_to_seconds(time_str):
-  minutes, seconds = time_str.split(":")
-  return int(minutes) * 60 + float(seconds)
-
-  # Helper: average split per distance in minutes:seconds
-def avg_split(time_str, distance_meters):
-    total_seconds = time_to_seconds(time_str)
-    avg_sec = total_seconds / (distance_meters / 1609.34)  # convert meters to miles if needed
-    minutes = int(avg_sec // 60)
-    seconds = int(round(avg_sec % 60))
-    return f"{minutes}:{seconds:02d}"
-
-# ====== Parsing HTML ======
-def get_html(url):
-  r = requests.get(url)
-  r.raise_for_status()
-  return r.text
-
-def parse_html(html):
-  soup = BeautifulSoup(html, "html.parser")
-  text = soup.get_text("\n")
-  lines = [line.strip() for line in text.splitlines() if line.strip()]
-
-  print(text)
-
-  records = []
-  current_event = None
-  current_race_type = None
-  current_distance = None
-  current_event_number = None
-
-  # Event header regex
-  event_regex = re.compile(
-    r"Event\s+(\d+)\s+(.*?)\s+(Varsity|FS|Frosh/Soph|[A-Za-z]+)?$",
-    re.IGNORECASE
-  )
-
-  # Runner regex
-  runner_regex = re.compile(
-    r"(?P<place>\d+)\s+"
-    r"(?P<name>[A-Z][a-zA-Z ,\-\(\)']+?)\s+"
-    r"(?P<grade>\d{1,2})\s+"
-    r"(?P<team>.+?)\s+"
-    r"(?P<time>\d+:\d+\.\d+)"
-  )
-
-  for line in lines:
-    # Check for event header
-    ev = event_regex.search(line)
-    if ev:
-      current_event_number = ev.group(1)
-      event_name_dist = ev.group(2).strip()
-      current_race_type = ev.group(3).strip() if ev.group(3) else "Unknown"
-      # Extract distance (first number + Meter)
-      dist_match = re.search(r"(\d+[x]?\d*\s?Meter)", event_name_dist)
-      current_distance = dist_match.group(1) if dist_match else "Unknown"
-      current_event = f"{current_event_number}_{current_distance}_{current_race_type}"
-      continue
-
-      # Check for runner row
-    m = runner_regex.match(line)
-    if m and current_event:
-      records.append({
-        "Placement": int(m.group("place")),
-        "Runner": m.group("name").strip(),
-        "Grade": int(m.group("grade")),
-        "School": m.group("team").strip(),
-        "Time": m.group("time"),
-        "EventID": current_event,
-        "RaceType": current_race_type,
-        "Length": current_distance
-      })
-
-  df = pd.DataFrame(records)
-  def flip_name(name):
-    if "," in name:
-      last, first = name.split(",", 1)
-      return f"{first.strip()} {last.strip()}"
-    return name
-
-  df['Runner'] = df['Runner'].apply(flip_name)
-  print(df.head())
-
-  lines = [line.strip() for line in soup.get_text("\n").split("\n") if line.strip()]
-  
-  # Print lines with index so you can see structure
-  for i, line in enumerate(lines[:20]):  # first 20 lines
-      print(i, line)
-  
-  # ---- ADJUST THESE AFTER YOU CHECK OUTPUT ----
-  race_name = lines[2]
-  race_date = lines[3]
-
-  month_pattern = r'(January|February|March|April|May|June|July|August|September|October|November|December)'
-
-date_line = None
-
-for line in lines:
-  if re.search(month_pattern, line):
-    date_line = line
-    break
-
-# -------------------------
-# Convert to numeric format
-# -------------------------
-month_map = {
-  "January": "1", "February": "2", "March": "3", "April": "4",
-  "May": "5", "June": "6", "July": "7", "August": "8",
-  "September": "9", "October": "10", "November": "11", "December": "12"
-}
-
-race_date = None
-
-if date_line:
-  match = re.search(rf'{month_pattern}\s+(\d{{1,2}}),\s*(\d{{4}})', date_line)
-  if match:
-    month, day, year = match.groups()
-    race_date = f"{month_map[month]}/{int(day)}/{year}"
-
-  return df,race_date,race_name
-
-
-
-  # ====== Placement / School Filter ======
-def compute_school_placement(df_full, school_name):
-    totals = df_full.groupby("EventID")["Placement"].max()
-    df_school = df_full[df_full["School"].str.lower().isin(SCHOOL_NAME)].copy()
-    df_school["Placement"] = df_school.apply(
-      lambda r: f"{r['Placement']}/{totals[r['EventID']]}",
-      axis=1
-    )
-    return df_school
-
-# ====== Reformat Columns for CSV ======
-def format_for_csv(df_school,MEET_NAME,MEET_DATE, race_distance_meters=1600):
-  df = df_school.copy()
-  df["Race"] = MEET_NAME
-  df["Date"] = MEET_DATE
-  df["Sport"] = SPORT
-  df["Avr_splits"] = df["Time"].apply(lambda t: avg_split(t, race_distance_meters))
-  df["Date_dt"] = pd.to_datetime(df["Date"])
-  df["time_seconds"] = df["Time"].apply(time_to_seconds)
-
-
-  # Reorder columns
-  df = df[["School","Runner", "Race", "Placement", "Grade", "Time",
-           "Avr_splits", "Date", "Length", "RaceType", "Sport",
-           "Date_dt", "time_seconds"]]
-
-  print(df.head())
-  return df
-
+#########################################################################above is filitering, below is pipeline
 
 # ====== Main Pipeline ======
 @anvil.server.callable
 def main():
   html = get_html(URL)
-  df_full,MEET_NAME,MEET_DATE = parse_html(html)
+  df_full,MEET_DATE,MEET_NAME = parse_html(html)
   df_school = compute_school_placement(df_full, SCHOOL_NAME)
   df_full = format_for_csv(df_school,MEET_NAME,MEET_DATE)
-  df_final = df_full[df_full["Length"].str.contains("800|1600|3200", na=False)]
+  df_final = df_full
   df_final["Date_dt"] = df_final['Date_dt'].dt.strftime("%Y-%m-%d")
-
-
 
   og_df = table_into_df(SPORT)
   temp_df = pd.concat([og_df,df_final],ignore_index = True)
