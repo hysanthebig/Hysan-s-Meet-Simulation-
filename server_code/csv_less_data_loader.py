@@ -1,5 +1,4 @@
-import anvil.files
-from anvil.files import data_files
+
 import anvil.tables as tables
 import anvil.tables.query as q
 from anvil.tables import app_tables
@@ -9,11 +8,12 @@ from bs4 import BeautifulSoup
 import pandas as pd
 import re
 from datetime import datetime
+import time
 
 # ================= CONFIG =================
 URL = "https://files.finishedresults.com/Track2026/Meets/13770-Colony-vs-Alta-Loma.html"
 SCHOOL_NAME = "colony"  # case-insensitive
-table = app_tables.track_table
+table = app_tables.tracktable
 SPORT = "Track"
 MEET_NAME = "Colony Vs Alta Loma"
 MEET_DATE = "3/26/2026"
@@ -23,6 +23,83 @@ MEET_DATE = "3/26/2026"
 pd.set_option('display.max_columns',None)
 pd.set_option('display.width',None)
 pd.set_option('display.max_rows',None)
+
+def tabler(rows):
+  data_list = []
+  for r in rows:
+    data_list.append({
+      "Runner": r["Runner"],
+      "Race": r["Race"],
+      "Grade": r["Grade"],
+      "Placement":r["Placement"],
+      "Date":r["Date"],
+      "Date_dt":r["Date_dt"],
+      "Time":r["Time"],
+      "time_seconds":r["time_seconds"],
+      "Length":r["Length"],
+      "Avr_splits":r['Avr_splits']
+    })
+  df = pd.DataFrame(data_list)
+  return df
+  
+def table_into_df(sport):
+  if sport == "XC":
+    rows = app_tables.datatable.search()
+  if sport == "Track":
+    rows = app_tables.tracktable.search()
+  return tabler(rows)
+
+
+
+def filter(temp_df,sort_by,runnerlist,racelist,gradelist,lengthlist):
+  start = time.time()
+  df = temp_df
+
+  readmask = pd.Series(True, index=df.index)
+  runner_mask = pd.Series(False, index=df.index)
+  race_mask = pd.Series(False, index=df.index)
+  grade_mask = pd.Series(False, index = df.index)
+  length_mask = pd.Series(False,index = df.index)
+  ####################Filter#######################
+  runner_mask = df["Runner"].str.lower().isin([r.lower() for r in racelist])
+  if len(runnerlist) == 0:
+    runner_mask = pd.Series(True,index =df.index)
+
+  race_mask = df['Race'].str.lower().isin([r.lower() for r in racelist])
+  if len(racelist) == 0:
+    race_mask = pd.Series(True,index =df.index)
+
+  grade_mask = df['Grade'].astype(str).isin([r.lower() for r in gradelist])
+  if len(gradelist) == 0:
+    grade_mask = pd.Series(True,index =df.index)
+
+  length_mask = df['Length'].str.lower().isin([r.lower() for r in lengthlist])
+  if len(lengthlist) == 0:
+    length_mask = pd.Series(True,index =df.index)
+
+
+  readmask = readmask & runner_mask & race_mask & grade_mask & length_mask
+
+  df_filtered = df.loc[readmask]
+  df_filtered = df_filtered.sort_values(by=[sort_by])
+  df_filtered =df_filtered.to_dict(orient="records")
+
+
+  end = time.time()
+  print(f"filter {end-start:.4f}")
+
+  return(df_filtered)
+
+def pr_display(sport,runnerlist,lengthlist,gradelist):
+  filitered_df = filter(sport,"Runner",[],[],[],lengthlist)
+  print(filitered_df)
+  df_pr = tabler(filitered_df)
+
+  df_pr = df_pr.sort_values(by = ["time_seconds"])
+  pr_df = df_pr.groupby("Runner")['time_seconds'].min().copy()
+  pr_rows = df_pr[df_pr["time_seconds"] == df_pr["Runner"].map(pr_df)]
+  pr_rows = pr_rows.drop(columns = ['time_seconds','Date_dt']).to_dict(orient="records")
+  return(pr_rows)
 
 
 # Helper: convert mm:ss string to total seconds
@@ -128,19 +205,20 @@ def format_for_csv(df_school, race_distance_meters=1600):
   df["Race"] = MEET_NAME
   df["Date"] = MEET_DATE
   df["Sport"] = SPORT
-  df["Avr splits"] = df["Time"].apply(lambda t: avg_split(t, race_distance_meters))
+  df["Avr_splits"] = df["Time"].apply(lambda t: avg_split(t, race_distance_meters))
   df["Date_dt"] = pd.to_datetime(df["Date"])
   df["time_seconds"] = df["Time"].apply(time_to_seconds)
 
   # Reorder columns
   df = df[["Runner", "Race", "Placement", "Grade", "Time",
-           "Avr splits", "Date", "Length", "RaceType", "Sport",
+           "Avr_splits", "Date", "Length", "RaceType", "Sport",
            "Date_dt", "time_seconds"]]
 
   return df
 
 
 # ====== Main Pipeline ======
+@anvil.server.callable
 def main():
   html = get_html(URL)
   df_full = parse_html(html)
@@ -148,14 +226,22 @@ def main():
   df_full = format_for_csv(df_school)
   df_final = df_full[df_full["Length"].str.contains("800|1600|3200", na=False)]
   df_final["Date_dt"] = df_final['Date_dt'].dt.strftime("%Y-%m-%d")
-  print(df_final)
 
 
-  og_df = anvil.server.call("table_into_df",SPORT)
+
+  og_df = table_into_df(SPORT)
   temp_df = pd.concat([og_df,df_final],ignore_index = True)
-  lengths = temp_df["Length"].unqiue()
-  new_df = []
+  lengths = temp_df["Length"].unique()
+  print(lengths)
+  new_df = pd.DataFrame()
 
   for length in lengths:
-    pr_df = anvil.server.call("pr_display",SPORT,[],length,[])
-    new_df.append(pr_df)
+    print(length)
+    test = [f"{length}"]
+    pr_df = pr_display(temp_df,[],test,[])
+    print(pr_df)
+    new_df = pd.concat([new_df,pr_df])
+  
+
+
+main()
