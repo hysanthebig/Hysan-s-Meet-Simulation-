@@ -15,8 +15,6 @@ URL = "https://files.finishedresults.com/Track2026/Meets/13770-Colony-vs-Alta-Lo
 SCHOOL_NAME = ["colony","alta loma","south hills",'los altos']  # case-insensitive
 table = app_tables.tracktable
 SPORT = "Track"
-MEET_NAME = "Colony Vs Alta Loma"
-MEET_DATE = "3/26/2026"
 # ==========================================
 
 
@@ -147,6 +145,18 @@ def parse_html(html):
     r"(?P<team>.+?)\s+"
     r"(?P<time>\d+:\d+\.\d+)"
   )
+  title = soup.title.string.strip() if soup.title else ""
+
+  race_name = re.sub(r'\s*-\s*Finished Results.*', '', title)
+  
+  if not race_name:
+      header = soup.find(['h1', 'h2'])
+      race_name = header.get_text(strip=True) if header else None
+  
+
+  text = soup.get_text(separator="\n")
+  
+  race_date = re.search(r'\b\d{2}/\d{2}/\d{4}\b', text)
 
 
   for line in lines:
@@ -188,7 +198,7 @@ def parse_html(html):
 
 
 
-  return df
+  return df,race_date,race_name
 
 
 
@@ -203,7 +213,7 @@ def compute_school_placement(df_full, school_name):
     return df_school
 
 # ====== Reformat Columns for CSV ======
-def format_for_csv(df_school, race_distance_meters=1600):
+def format_for_csv(df_school,MEET_NAME,MEET_DATE, race_distance_meters=1600):
   df = df_school.copy()
   df["Race"] = MEET_NAME
   df["Date"] = MEET_DATE
@@ -226,9 +236,9 @@ def format_for_csv(df_school, race_distance_meters=1600):
 @anvil.server.callable
 def main():
   html = get_html(URL)
-  df_full = parse_html(html)
+  df_full,MEET_NAME,MEET_DATE = parse_html(html)
   df_school = compute_school_placement(df_full, SCHOOL_NAME)
-  df_full = format_for_csv(df_school)
+  df_full = format_for_csv(df_school,MEET_NAME,MEET_DATE)
   df_final = df_full[df_full["Length"].str.contains("800|1600|3200", na=False)]
   df_final["Date_dt"] = df_final['Date_dt'].dt.strftime("%Y-%m-%d")
 
