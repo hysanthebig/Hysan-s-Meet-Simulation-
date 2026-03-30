@@ -145,19 +145,6 @@ def parse_html(html):
     r"(?P<team>.+?)\s+"
     r"(?P<time>\d+:\d+\.\d+)"
   )
-  title = soup.title.string.strip() if soup.title else ""
-
-  race_name = re.sub(r'\s*-\s*Finished Results.*', '', title)
-  
-  if not race_name:
-      header = soup.find(['h1', 'h2'])
-      race_name = header.get_text(strip=True) if header else None
-  
-
-  text = soup.get_text(separator="\n")
-  
-  race_date = re.search(r'\b\d{2}/\d{2}/\d{4}\b', text)
-
 
   for line in lines:
     # Check for event header
@@ -196,7 +183,15 @@ def parse_html(html):
   df['Runner'] = df['Runner'].apply(flip_name)
   print(df.head())
 
+lines = [line.strip() for line in soup.get_text("\n").split("\n") if line.strip()]
 
+# Print lines with index so you can see structure
+for i, line in enumerate(lines[:20]):  # first 20 lines
+    print(i, line)
+
+# ---- ADJUST THESE AFTER YOU CHECK OUTPUT ----
+race_name = lines[0]
+race_date = lines[1]
 
   return df,race_date,race_name
 
