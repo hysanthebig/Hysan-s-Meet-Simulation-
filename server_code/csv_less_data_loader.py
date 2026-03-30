@@ -37,7 +37,8 @@ def tabler(rows):
       "Time":r["Time"],
       "time_seconds":r["time_seconds"],
       "Length":r["Length"],
-      "Avr_splits":r['Avr_splits']
+      "Avr_splits":r['Avr_splits'],
+      "RaceType":r["RaceType"]
     })
   df = pd.DataFrame(data_list)
   return df
@@ -92,13 +93,11 @@ def filter(temp_df,sort_by,runnerlist,racelist,gradelist,lengthlist):
 
 def pr_display(sport,runnerlist,lengthlist,gradelist):
   filitered_df = filter(sport,"Runner",[],[],[],lengthlist)
-  print(filitered_df)
   df_pr = tabler(filitered_df)
 
   df_pr = df_pr.sort_values(by = ["time_seconds"])
   pr_df = df_pr.groupby("Runner")['time_seconds'].min().copy()
   pr_rows = df_pr[df_pr["time_seconds"] == df_pr["Runner"].map(pr_df)]
-  pr_rows = pr_rows.drop(columns = ['time_seconds','Date_dt']).to_dict(orient="records")
   return(pr_rows)
 
 
@@ -232,15 +231,23 @@ def main():
   og_df = table_into_df(SPORT)
   temp_df = pd.concat([og_df,df_final],ignore_index = True)
   lengths = temp_df["Length"].unique()
-  print(lengths)
   new_df = pd.DataFrame()
 
   for length in lengths:
-    print(length)
     test = [f"{length}"]
-    pr_df = tabler(pr_display(temp_df,[],test,[]))
-    print(pr_df)
+    pr_df = pr_display(temp_df,[],test,[])
     new_df = pd.concat([new_df,pr_df])
+
+  print(new_df)
+
+  for _, row in new_df.iterrows():
+    row= {k:(None if pd.isna(v) else v) for k,v in row.items()}
+    exists = table.search(Runner=row["Runner"],Race=row["Race"],RaceType=row["RaceType"],Time=row["Time"])
+    if not list(exists):
+      print(row)
+      table.add_row(Runner=row["Runner"],Race=row["Race"],Placement=row["Placement"],Grade=row["Grade"],Time=row["Time"],Avr_splits=row["Avr_splits"],Date=row["Date"],Length=row["Length"],RaceType = row["RaceType"],Date_dt=row["Date_dt"],time_seconds=row["time_seconds"])
+
+
   
 
 
