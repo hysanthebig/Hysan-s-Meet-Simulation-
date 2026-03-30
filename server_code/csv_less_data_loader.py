@@ -33,7 +33,7 @@ def tabler(rows):
       "Grade": r["Grade"],
       "Placement":r["Placement"],
       "Date":r["Date"],
-      "Date_dt":r["Date_dt"],
+      'Date_dt':r["Date_dt"],
       "Time":r["Time"],
       "time_seconds":r["time_seconds"],
       "Length":r["Length"],
@@ -238,7 +238,7 @@ def main():
   for length in lengths:
     print(length)
     test = [f"{length}"]
-    pr_df = pr_display(temp_df,[],test,[])
+    pr_df = tabler(pr_display(temp_df,[],test,[]))
     print(pr_df)
     new_df = pd.concat([new_df,pr_df])
   
