@@ -183,15 +183,41 @@ def parse_html(html):
   df['Runner'] = df['Runner'].apply(flip_name)
   print(df.head())
 
-lines = [line.strip() for line in soup.get_text("\n").split("\n") if line.strip()]
+  lines = [line.strip() for line in soup.get_text("\n").split("\n") if line.strip()]
+  
+  # Print lines with index so you can see structure
+  for i, line in enumerate(lines[:20]):  # first 20 lines
+      print(i, line)
+  
+  # ---- ADJUST THESE AFTER YOU CHECK OUTPUT ----
+  race_name = lines[2]
+  race_date = lines[3]
 
-# Print lines with index so you can see structure
-for i, line in enumerate(lines[:20]):  # first 20 lines
-    print(i, line)
+  month_pattern = r'(January|February|March|April|May|June|July|August|September|October|November|December)'
 
-# ---- ADJUST THESE AFTER YOU CHECK OUTPUT ----
-race_name = lines[0]
-race_date = lines[1]
+date_line = None
+
+for line in lines:
+  if re.search(month_pattern, line):
+    date_line = line
+    break
+
+# -------------------------
+# Convert to numeric format
+# -------------------------
+month_map = {
+  "January": "1", "February": "2", "March": "3", "April": "4",
+  "May": "5", "June": "6", "July": "7", "August": "8",
+  "September": "9", "October": "10", "November": "11", "December": "12"
+}
+
+race_date = None
+
+if date_line:
+  match = re.search(rf'{month_pattern}\s+(\d{{1,2}}),\s*(\d{{4}})', date_line)
+  if match:
+    month, day, year = match.groups()
+    race_date = f"{month_map[month]}/{int(day)}/{year}"
 
   return df,race_date,race_name
 
