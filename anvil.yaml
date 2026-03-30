@@ -1,4 +1,15 @@
 allow_embedding: false
+db_schema:
+  table_2:
+    client: none
+    columns: []
+    server: full
+    title: Table 2
+  tracktable:
+    client: none
+    columns: []
+    server: full
+    title: tracktable
 dependencies:
 - config: {}
   dep_id: dep_lin1x4oec0ytd
