@@ -12,7 +12,7 @@ import time
 
 # ================= CONFIG =================
 URL = "https://files.finishedresults.com/Track2026/Meets/13770-Colony-vs-Alta-Loma.html"
-SCHOOL_NAME = "colony"  # case-insensitive
+SCHOOL_NAME = ["colony","alta loma","south hills",'los altos']  # case-insensitive
 table = app_tables.tracktable
 SPORT = "Track"
 MEET_NAME = "Colony Vs Alta Loma"
@@ -191,7 +191,7 @@ def parse_html(html):
   # ====== Placement / School Filter ======
 def compute_school_placement(df_full, school_name):
     totals = df_full.groupby("EventID")["Placement"].max()
-    df_school = df_full[df_full["Team"].str.contains(school_name, case=False, na=False)].copy()
+    df_school = df_full[df_full["Team"].str.lower().isin(SCHOOL_NAME)].copy()
     df_school["Placement"] = df_school.apply(
       lambda r: f"{r['Placement']}/{totals[r['EventID']]}",
       axis=1
