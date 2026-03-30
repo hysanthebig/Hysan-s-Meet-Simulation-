@@ -9,7 +9,7 @@ import pandas as pd
 import re
 from datetime import datetime
 import time
-
+print("COnnectected")
 # ================= CONFIG =================
 URL = "https://files.finishedresults.com/Track2026/Meets/13770-Colony-vs-Alta-Loma.html"
 SCHOOL_NAME = ["colony","alta loma","south hills",'los altos']  # case-insensitive
@@ -28,6 +28,7 @@ def tabler(rows):
   data_list = []
   for r in rows:
     data_list.append({
+      "School":r["School"],
       "Runner": r["Runner"],
       "Race": r["Race"],
       "Grade": r["Grade"],
@@ -91,10 +92,9 @@ def filter(temp_df,sort_by,runnerlist,racelist,gradelist,lengthlist):
 
   return(df_filtered)
 
-def pr_display(sport,runnerlist,lengthlist,gradelist):
-  filitered_df = filter(sport,"Runner",[],[],[],lengthlist)
+def pr_display(df,runnerlist,lengthlist,gradelist):
+  filitered_df = filter(df,"Runner",[],[],[],lengthlist)
   df_pr = tabler(filitered_df)
-
   df_pr = df_pr.sort_values(by = ["time_seconds"])
   pr_df = df_pr.groupby("Runner")['time_seconds'].min().copy()
   pr_rows = df_pr[df_pr["time_seconds"] == df_pr["Runner"].map(pr_df)]
@@ -125,6 +125,8 @@ def parse_html(html):
   text = soup.get_text("\n")
   lines = [line.strip() for line in text.splitlines() if line.strip()]
 
+  print(text)
+
   records = []
   current_event = None
   current_race_type = None
@@ -146,6 +148,7 @@ def parse_html(html):
     r"(?P<time>\d+:\d+\.\d+)"
   )
 
+
   for line in lines:
     # Check for event header
     ev = event_regex.search(line)
@@ -166,7 +169,7 @@ def parse_html(html):
         "Placement": int(m.group("place")),
         "Runner": m.group("name").strip(),
         "Grade": int(m.group("grade")),
-        "Team": m.group("team").strip(),
+        "School": m.group("team").strip(),
         "Time": m.group("time"),
         "EventID": current_event,
         "RaceType": current_race_type,
@@ -181,6 +184,7 @@ def parse_html(html):
     return name
 
   df['Runner'] = df['Runner'].apply(flip_name)
+  print(df.head())
 
 
 
@@ -191,7 +195,7 @@ def parse_html(html):
   # ====== Placement / School Filter ======
 def compute_school_placement(df_full, school_name):
     totals = df_full.groupby("EventID")["Placement"].max()
-    df_school = df_full[df_full["Team"].str.lower().isin(SCHOOL_NAME)].copy()
+    df_school = df_full[df_full["School"].str.lower().isin(SCHOOL_NAME)].copy()
     df_school["Placement"] = df_school.apply(
       lambda r: f"{r['Placement']}/{totals[r['EventID']]}",
       axis=1
@@ -208,11 +212,13 @@ def format_for_csv(df_school, race_distance_meters=1600):
   df["Date_dt"] = pd.to_datetime(df["Date"])
   df["time_seconds"] = df["Time"].apply(time_to_seconds)
 
+
   # Reorder columns
-  df = df[["Runner", "Race", "Placement", "Grade", "Time",
+  df = df[["School","Runner", "Race", "Placement", "Grade", "Time",
            "Avr_splits", "Date", "Length", "RaceType", "Sport",
            "Date_dt", "time_seconds"]]
 
+  print(df.head())
   return df
 
 
@@ -238,17 +244,16 @@ def main():
     pr_df = pr_display(temp_df,[],test,[])
     new_df = pd.concat([new_df,pr_df])
 
-  print(new_df)
+  print(new_df.head())
 
   for _, row in new_df.iterrows():
     row= {k:(None if pd.isna(v) else v) for k,v in row.items()}
     exists = table.search(Runner=row["Runner"],Race=row["Race"],RaceType=row["RaceType"],Time=row["Time"])
     if not list(exists):
       print(row)
-      table.add_row(Runner=row["Runner"],Race=row["Race"],Placement=row["Placement"],Grade=row["Grade"],Time=row["Time"],Avr_splits=row["Avr_splits"],Date=row["Date"],Length=row["Length"],RaceType = row["RaceType"],Date_dt=row["Date_dt"],time_seconds=row["time_seconds"])
+      table.add_row(School = row["School"],Runner=row["Runner"],Race=row["Race"],Placement=row["Placement"],Grade=row["Grade"],Time=row["Time"],Avr_splits=row["Avr_splits"],Date=row["Date"],Length=row["Length"],RaceType = row["RaceType"],Date_dt=row["Date_dt"],time_seconds=row["time_seconds"])
 
 
   
 
 
-main()
