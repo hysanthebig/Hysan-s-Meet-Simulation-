@@ -12,7 +12,7 @@ import time
 
 print("COnnectected")
 # ================= CONFIG =================
-URL = ""
+URL = "https://files.finishedresults.com/Track2026/Meets/13968-San-Dimas-vs-Bonita.html"
 SCHOOL_NAME = ["colony","san dimas","alta loma","south hills",'los altos']  # case-insensitive
 table = app_tables.tracktable
 SPORT = "Track"
@@ -43,6 +43,14 @@ def avg_split(time_str, distance_meters):
     minutes = int(avg_sec // 60)
     seconds = int(round(avg_sec % 60))
     return f"{minutes}:{seconds:02d}"
+
+#helper for unicheck
+def error_append_table(row):
+  print(row["School"],row["Runner"],row["Race"],row["Length"],row["Grade"])
+  app_tables.errortable.add_row(School = row["School"],Runner=row["Runner"],Race=row["Race"],
+                                Placement=row["Placement"],Grade=row["Grade"],Time=row["Time"]
+                                ,Date=row["Date"],Length=row["Length"],RaceType = row["RaceType"],
+                                Date_dt=row["Date_dt"],time_seconds=row["time_seconds"])
 
 # ====== Parsing HTML ======
 def get_html(url):
@@ -292,6 +300,15 @@ def main():
     pr_df = pr_display(temp_df,[],test,[])
     new_df = pd.concat([new_df,pr_df])
 
+  to_be_checked = new_df.iterrows()
+  error_list = uni_check(to_be_checked)
+  if error_list:
+    for row in error_list:
+      print(row)
+    
+  
+    
+
 
 
   for _, row in new_df.iterrows():
@@ -303,55 +320,64 @@ def main():
       if row['time_seconds'] < existing_row["time_seconds"]:
         print(f"NEW PR {row}")
         a = a+1
-        existing_row.update(School = row["School"],Runner=row["Runner"],Race=row["Race"],
-                     Placement=row["Placement"],Grade=row["Grade"],Time=row["Time"]
-                     ,Date=row["Date"],Length=row["Length"],RaceType = row["RaceType"],
-                     Date_dt=row["Date_dt"],time_seconds=row["time_seconds"])
+        #existing_row.update(School = row["School"],Runner=row["Runner"],Race=row["Race"],
+                    # Placement=row["Placement"],Grade=row["Grade"],Time=row["Time"]
+                    # ,Date=row["Date"],Length=row["Length"],RaceType = row["RaceType"],
+                   #  Date_dt=row["Date_dt"],time_seconds=row["time_seconds"])
     else:
         print(f"NEW RUNNER {row}")
         b = b+1
-        table.add_row(School = row["School"],Runner=row["Runner"],Race=row["Race"],
-                     Placement=row["Placement"],Grade=row["Grade"],Time=row["Time"]
-                    ,Date=row["Date"],Length=row["Length"],RaceType = row["RaceType"],
-                     Date_dt=row["Date_dt"],time_seconds=row["time_seconds"])
+        #table.add_row(School = row["School"],Runner=row["Runner"],Race=row["Race"],
+                    # Placement=row["Placement"],Grade=row["Grade"],Time=row["Time"]
+                   # ,Date=row["Date"],Length=row["Length"],RaceType = row["RaceType"],
+                  #   Date_dt=row["Date_dt"],time_seconds=row["time_seconds"])
       
   return a,b
   
 
 @anvil.server.background_task
-def uni_check():
-  for row in table.search():
-    exists = list(table.search(Runner=row["Runner"],Length=row["Length"],School=row["School"]))
+def uni_check(table_to_check):
+  table = table_to_check
+  error_list = []
+  for row in table:
+    error_occured = False
+    exists = list(table(Runner=row["Runner"],Length=row["Length"],School=row["School"]))
     number_of_similar_rows = len(exists)
     if number_of_similar_rows > 1:
       print("Warning, duplicate detected")
-      print(row["Runner"],row["School"],row["Length"])
+      error_append_table(row)
+      error_occured = True
     if row["Length"] == "1600 Meter":
       if row["time_seconds"] < 240:
-        print("Data Discrpencie")
-        print(row["Runner"],row["School"],row["Length"],row["Time"])
-    if row["Length"] == "800 Meter":
+        error_append_table(row)
+        error_occured = True
+    elif row["Length"] == "800 Meter":
       if row["time_seconds"] < 100:
-        print("Data Discrpencie")
-        print(row["Runner"],row["School"],row["Length"],row["Time"])
-    if row["Length"] == "3200 Meter":
+        error_append_table(row)
+        error_occured = True
+    elif row["Length"] == "3200 Meter":
       if row["time_seconds"] < 570:
-        print("Data Discrpencie")
-        print(row["Runner"],row["School"],row["Length"],row["Time"])
-    if row["Length"] == "100 Meter":
+        error_append_table(row)
+        error_occured = True
+    elif row["Length"] == "100 Meter":
       if row["time_seconds"] > 30:
-        print("Data Discrpencie")
-        print(row["Runner"],row["School"],row["Length"],row["Time"])
-    if row["Length"] == "200 Meter":
+        error_append_table(row)
+        error_occured = True
+    elif row["Length"] == "200 Meter":
       if row["time_seconds"] > 60:
-        print("Data Discrpencie")
-        print(row["Runner"],row["School"],row["Length"],row["Time"])
-    if row["Length"] == "400 Meter":
+        error_append_table(row)       
+        error_occured = True
+    elif row["Length"] == "400 Meter":
       if row["time_seconds"] < 40:
-        print("Data Discrpencie")
-        print(row["Runner"],row["School"],row["Length"],row["Time"])
-    if row["Length"] is None:
-        print(row["Runner"],row["School"],row["Length"],row["Time"])
+        error_occured = True
+        error_append_table(row)
+        
+    if error_occured:
+      error_list.append(row)
+
+  if error_list:
+    return error_list
+
       
   print("UNI-Check completed")
 
