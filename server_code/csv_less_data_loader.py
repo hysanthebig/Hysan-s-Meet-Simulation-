@@ -12,7 +12,7 @@ import time
 
 print("COnnectected")
 # ================= CONFIG =================
-URL = "https://files.finishedresults.com/Track2026/Meets/13491-The-Qualifier.html"
+URL = ""
 SCHOOL_NAME = ["colony","san dimas","alta loma","south hills",'los altos']  # case-insensitive
 table = app_tables.tracktable
 SPORT = "Track"
@@ -326,6 +326,31 @@ def uni_check():
     if number_of_similar_rows > 1:
       print("Warning, duplicate detected")
       print(row["Runner"],row["School"],row["Length"])
+    if row["Length"] == "1600 Meter":
+      if row["time_seconds"] < 240:
+        print("Data Discrpencie")
+        print(row["Runner"],row["School"],row["Length"],row["Time"])
+    if row["Length"] == "800 Meter":
+      if row["time_seconds"] < 100:
+        print("Data Discrpencie")
+        print(row["Runner"],row["School"],row["Length"],row["Time"])
+    if row["Length"] == "3200 Meter":
+      if row["time_seconds"] < 570:
+        print("Data Discrpencie")
+        print(row["Runner"],row["School"],row["Length"],row["Time"])
+    if row["Length"] == "100 Meter":
+      if row["time_seconds"] > 30:
+        print("Data Discrpencie")
+        print(row["Runner"],row["School"],row["Length"],row["Time"])
+    if row["Length"] == "200 Meter":
+      if row["time_seconds"] > 60:
+        print("Data Discrpencie")
+        print(row["Runner"],row["School"],row["Length"],row["Time"])
+    if row["Length"] == "400 Meter":
+      if row["time_seconds"] < 40:
+        print("Data Discrpencie")
+        print(row["Runner"],row["School"],row["Length"],row["Time"])
+      
   print("UNI-Check completed")
 
 

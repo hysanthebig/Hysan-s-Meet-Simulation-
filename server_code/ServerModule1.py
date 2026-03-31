@@ -54,8 +54,6 @@ def time_to_seconds(time):
 def filter(sport,sort_by,runnerlist,schoollist,gradelist,lengthlist):
   start = time.time()
   df = table_into_df(sport)
-  print(df.head())
-  print(schoollist)
 
   readmask = pd.Series(True, index=df.index)
   runner_mask = pd.Series(False, index=df.index)
@@ -96,7 +94,6 @@ def filter(sport,sort_by,runnerlist,schoollist,gradelist,lengthlist):
 def pr_display(sport,runnerlist,lengthlist,gradelist,schoollist):
   filitered_df = filter(sport,"Runner",runnerlist,schoollist,gradelist,lengthlist)
   df_pr = tabler(filitered_df)
-  print(df_pr)
   df_pr = df_pr.sort_values(by = ["time_seconds"])
   pr_df = df_pr.groupby("Runner")['time_seconds'].min().copy()
   pr_rows = df_pr[df_pr["time_seconds"] == df_pr["Runner"].map(pr_df)]
@@ -104,3 +101,9 @@ def pr_display(sport,runnerlist,lengthlist,gradelist,schoollist):
   return(pr_rows)
 
 
+@anvil.server.callable
+def count_events():
+  events = list(dict.fromkeys([r['Length'] for r in app_tables.tracktable.search()]))
+  return events
+  
+  
