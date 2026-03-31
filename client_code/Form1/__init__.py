@@ -10,8 +10,22 @@ class Form1(Form1Template):
   def __init__(self, **properties):
     # Set Form properties and Data Bindings.
     self.init_components(**properties)
-    anvil.server.call('background_main')
-    anvil.server.call('launch_uni_check')
+    if 1 == 0:
+      anvil.server.call('background_main')
+      anvil.server.call('launch_uni_check')
+    self.pr_screen_display()
     # Any code you write here will run before the form opens.
 
+  
+  def pr_screen_display(self):
+    selected_runners = []
+    selected_lengths = []
+    selected_grades = []
+    selected_schools = ["Alta Loma"]
+    sport = "Track"
+    self.repeating_panel_1.items = anvil.server.call("pr_display",sport,selected_runners,selected_lengths,selected_grades,selected_schools)
+    
+  def pr(self):
+    self.pr_screen_display()
 
+  

@@ -8,6 +8,7 @@ import plotly.graph_objects as go
 import numpy as np
 import time
 
+print("connected server module")
 def tabler(rows):
   data_list = []
   for r in rows:
@@ -21,7 +22,7 @@ def tabler(rows):
       "Time":r["Time"],
       "time_seconds":r["time_seconds"],
       "Length":r["Length"],
-      "Avr_splits":r['Avr_splits']
+      "School":r['School']
     })
   df = pd.DataFrame(data_list)
   return df
@@ -30,7 +31,7 @@ def table_into_df(sport):
   if sport == "XC":
     rows = app_tables.datatable.search()
   if sport == "Track":
-    rows = app_tables.track_table.search()
+    rows = app_tables.tracktable.search()
   return tabler(rows)
   
 def seconds_to_mintunes(seconds):
@@ -50,23 +51,25 @@ def time_to_seconds(time):
 
 
 @anvil.server.callable
-def filter(sport,sort_by,runnerlist,racelist,gradelist,lengthlist):
+def filter(sport,sort_by,runnerlist,schoollist,gradelist,lengthlist):
   start = time.time()
   df = table_into_df(sport)
+  print(df.head())
+  print(schoollist)
 
   readmask = pd.Series(True, index=df.index)
   runner_mask = pd.Series(False, index=df.index)
-  race_mask = pd.Series(False, index=df.index)
+  school_mask = pd.Series(False, index=df.index)
   grade_mask = pd.Series(False, index = df.index)
   length_mask = pd.Series(False,index = df.index)
   ####################Filter#######################
-  runner_mask = df["Runner"].str.lower().isin([r.lower() for r in racelist])
+  runner_mask = df["Runner"].str.lower().isin([r.lower() for r in runnerlist])
   if len(runnerlist) == 0:
     runner_mask = pd.Series(True,index =df.index)
 
-  race_mask = df['Race'].str.lower().isin([r.lower() for r in racelist])
-  if len(racelist) == 0:
-    race_mask = pd.Series(True,index =df.index)
+  school_mask = df['School'].str.lower().isin([r.lower() for r in schoollist])
+  if len(schoollist) == 0:
+    school_mask = pd.Series(True,index =df.index)
 
   grade_mask = df['Grade'].astype(str).isin([r.lower() for r in gradelist])
   if len(gradelist) == 0:
@@ -76,7 +79,8 @@ def filter(sport,sort_by,runnerlist,racelist,gradelist,lengthlist):
   if len(lengthlist) == 0:
     length_mask = pd.Series(True,index =df.index)
 
-  readmask = readmask & runner_mask & race_mask & grade_mask & length_mask
+  readmask = readmask & runner_mask & school_mask & grade_mask & length_mask
+  print(runner_mask,school_mask,grade_mask,length_mask)
 
   df_filtered = df.loc[readmask]
   df_filtered = df_filtered.sort_values(by=[sort_by])
@@ -88,11 +92,15 @@ def filter(sport,sort_by,runnerlist,racelist,gradelist,lengthlist):
 
   return(df_filtered)
 
-def pr_display(sport,runnerlist,lengthlist,gradelist):
-  filitered_df = filter(sport,"Runner",runnerlist,[],gradelist,lengthlist)
+@anvil.server.callable
+def pr_display(sport,runnerlist,lengthlist,gradelist,schoollist):
+  filitered_df = filter(sport,"Runner",runnerlist,schoollist,gradelist,lengthlist)
   df_pr = tabler(filitered_df)
+  print(df_pr)
   df_pr = df_pr.sort_values(by = ["time_seconds"])
   pr_df = df_pr.groupby("Runner")['time_seconds'].min().copy()
   pr_rows = df_pr[df_pr["time_seconds"] == df_pr["Runner"].map(pr_df)]
   pr_rows = pr_rows.drop(columns = ['time_seconds','Date_dt']).to_dict(orient="records")
   return(pr_rows)
+
+
