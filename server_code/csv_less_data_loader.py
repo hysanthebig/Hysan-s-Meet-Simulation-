@@ -9,10 +9,11 @@ import pandas as pd
 import re
 from datetime import datetime
 import time
+
 print("COnnectected")
 # ================= CONFIG =================
-URL = "https://files.finishedresults.com/Track2026/Meets/13770-Colony-vs-Alta-Loma.html"
-SCHOOL_NAME = ["colony","alta loma","south hills",'los altos']  # case-insensitive
+URL = "https://files.finishedresults.com/Track2026/Meets/13491-The-Qualifier.html"
+SCHOOL_NAME = ["colony","san dimas","alta loma","south hills",'los altos']  # case-insensitive
 table = app_tables.tracktable
 SPORT = "Track"
 # ==========================================
@@ -29,8 +30,11 @@ def time_to_seconds(time_str):
     if float(time_str) < 60:
       return float(time_str)
   except ValueError:
-    minutes, seconds = time_str.split(":")
-    return int(minutes) * 60 + float(seconds)
+    try:
+      minutes, seconds = time_str.split(":")
+      return int(minutes) * 60 + float(seconds)
+    except ValueError:
+      print(time_str)
 
   # Helper: average split per distance in minutes:seconds
 def avg_split(time_str, distance_meters):
@@ -99,7 +103,6 @@ def parse_html(html):
       if current_distance == "Unknown":
         continue
       else:
-        print(m.group("time"))
         records.append({
           "Placement": int(m.group("place")),
           "Runner": m.group("name").strip(),
@@ -255,17 +258,21 @@ def filter(temp_df,sort_by,runnerlist,racelist,gradelist,lengthlist):
   return(df_filtered)
 
 def pr_display(df,runnerlist,lengthlist,gradelist):
-  filitered_df = filter(df,"Runner",[],[],[],lengthlist)
-  df_pr = tabler(filitered_df)
-  df_pr = df_pr.sort_values(by = ["time_seconds"])
-  pr_df = df_pr.groupby("Runner")['time_seconds'].min().copy()
-  pr_rows = df_pr[df_pr["time_seconds"] == df_pr["Runner"].map(pr_df)]
-  return(pr_rows)
+  try:
+    filitered_df = filter(df,"Runner",[],[],[],lengthlist)
+    df_pr = tabler(filitered_df)
+    df_pr = df_pr.sort_values(by = ["time_seconds"])
+    pr_df = df_pr.groupby("Runner")['time_seconds'].min().copy()
+    pr_rows = df_pr[df_pr["time_seconds"] == df_pr["Runner"].map(pr_df)]
+    return(pr_rows)
+  except KeyError:
+    print(lengthlist)
+    
 
 #########################################################################above is filitering, below is pipeline
 
 # ====== Main Pipeline ======
-@anvil.server.callable
+@anvil.server.background_task
 def main():
   html = get_html(URL)
   df_full,MEET_DATE,MEET_NAME = parse_html(html)
@@ -278,23 +285,56 @@ def main():
   temp_df = pd.concat([og_df,df_final],ignore_index = True)
   lengths = temp_df["Length"].unique()
   new_df = pd.DataFrame()
-
+  a=0
+  b=0
   for length in lengths:
     test = [f"{length}"]
     pr_df = pr_display(temp_df,[],test,[])
     new_df = pd.concat([new_df,pr_df])
 
-  print(new_df)
+
 
   for _, row in new_df.iterrows():
     row= {k:(None if pd.isna(v) else v) for k,v in row.items()}
-    exists = table.search(Runner=row["Runner"],Race=row["Race"],RaceType=row["RaceType"],Time=row["Time"])
-    if not list(exists):
-      print(row)
-      table.add_row(School = row["School"],Runner=row["Runner"],Race=row["Race"],Placement=row["Placement"],Grade=row["Grade"],Time=row["Time"],Date=row["Date"],Length=row["Length"],RaceType = row["RaceType"],Date_dt=row["Date_dt"],time_seconds=row["time_seconds"])
-
-  print("Complete")
-
+    exists = table.search(Runner=row["Runner"],Length=row["Length"],School=row["School"])
+    exists = list(exists)
+    if exists:
+      existing_row = exists[0]
+      if row['time_seconds'] < existing_row["time_seconds"]:
+        print(f"NEW PR {row}")
+        a = a+1
+        existing_row.update(School = row["School"],Runner=row["Runner"],Race=row["Race"],
+                     Placement=row["Placement"],Grade=row["Grade"],Time=row["Time"]
+                     ,Date=row["Date"],Length=row["Length"],RaceType = row["RaceType"],
+                     Date_dt=row["Date_dt"],time_seconds=row["time_seconds"])
+    else:
+        print(f"NEW RUNNER {row}")
+        b = b+1
+        table.add_row(School = row["School"],Runner=row["Runner"],Race=row["Race"],
+                     Placement=row["Placement"],Grade=row["Grade"],Time=row["Time"]
+                    ,Date=row["Date"],Length=row["Length"],RaceType = row["RaceType"],
+                     Date_dt=row["Date_dt"],time_seconds=row["time_seconds"])
+      
+  return a,b
   
+
+@anvil.server.background_task
+def uni_check():
+  for row in table.search():
+    exists = list(table.search(Runner=row["Runner"],Length=row["Length"],School=row["School"]))
+    number_of_similar_rows = len(exists)
+    if number_of_similar_rows > 1:
+      print("Warning, duplicate detected")
+      print(row["Runner"],row["School"],row["Length"])
+  print("UNI-Check completed")
+
+
+@anvil.server.callable
+def background_main():
+  anvil.server.launch_background_task("main")
+
+@anvil.server.callable
+def launch_uni_check():
+  anvil.server.launch_background_task("uni_check")
 
 
