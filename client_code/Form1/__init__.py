@@ -36,7 +36,11 @@ class Form1(Form1Template):
     
   def pr(self):
     self.pr_screen_display()
+  def create_datagrids():
+
+    
 for event in anvil.server.call("count_events"):
-  print(event)
+
+  
 
   

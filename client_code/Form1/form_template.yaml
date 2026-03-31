@@ -1,5 +1,9 @@
 components_by_slot:
   content:
+  - layout_properties: {}
+    name: column_panel_1
+    properties: {}
+    type: ColumnPanel
   - components:
     - data_bindings: []
       name: repeating_panel_1
