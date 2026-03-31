@@ -13,16 +13,20 @@ class Form1(Form1Template):
     self.init_components(**properties)
     if 1 == 0:
       anvil.server.call('background_main')
-    if 1 == 0:
+    if 1 == 1:
       anvil.server.call('launch_uni_check')
 
-    for event in list(filter(lambda x:x is not None,anvil.server.call("count_events"))):
-      schools = ["Colony","Los Altos"]
-      print(event)
-      try:
-        self.create_datagrids(event,schools)
-      except AttributeError:
-        print("error")
+    if 1 == 0:
+      for event in list(filter(lambda x:x is not None,anvil.server.call("count_events"))):
+        schools = ["Colony","Los Altos"]
+        print(event)
+        try:
+          self.create_datagrids(event,schools)
+        except AttributeError:
+          print("error")
+  
+
+
       
 
     # Any code you write here will run before the form opens.
