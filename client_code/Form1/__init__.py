@@ -15,7 +15,16 @@ class Form1(Form1Template):
       anvil.server.call('background_main')
     if 1 == 0:
       anvil.server.call('launch_uni_check')
-    self.pr_screen_display()
+
+    for event in list(filter(lambda x:x is not None,anvil.server.call("count_events"))):
+      schools = ["Colony","Los Altos"]
+      print(event)
+      try:
+        self.create_datagrids(event,schools)
+      except AttributeError:
+        print("error")
+      
+
     # Any code you write here will run before the form opens.
 
   
@@ -34,12 +43,31 @@ class Form1(Form1Template):
 
 
     
-  def pr(self):
-    self.pr_screen_display()
-  def create_datagrids():
 
     
-for event in anvil.server.call("count_events"):
+  def create_datagrids(self,event,schools):
+    grid = DataGrid()
+    self.column_panel_1.add_component(grid)
+    grid.columns = [{"id":"A","title": event,"data_key":"Rank"},
+                    {"id":"B","title":"School","data_key":"School"},
+                    {"id":"C","title":"Runner","data_key":"Runner"},
+                    {"id":"D","title":"Grade","data_key":"Grade"},
+                    {"id":"E","title":"Length","data_key":"Length"},
+                    {"id":"F","title":"Time","data_key":"Time"}]
+    rp = RepeatingPanel(item_template=DataRowPanel)
+    data = anvil.server.call("pr_display","Track",[],[event],[],schools)
+    if data is None:
+      return
+    rp.items = [
+      {**row, "Rank": i + 1}
+      for i, row in enumerate(data)
+    ]
+
+    grid.add_component(rp)
+    
+
+    
+
 
   
 

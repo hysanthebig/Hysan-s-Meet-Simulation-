@@ -350,6 +350,8 @@ def uni_check():
       if row["time_seconds"] < 40:
         print("Data Discrpencie")
         print(row["Runner"],row["School"],row["Length"],row["Time"])
+    if row["Length"] is None:
+        print(row["Runner"],row["School"],row["Length"],row["Time"])
       
   print("UNI-Check completed")
 
