@@ -71,7 +71,7 @@ def parse_html(html):
     r"(?P<name>[A-Z][a-zA-Z ,\-\(\)']+?)\s+"
     r"(?P<grade>\d{1,2})\s+"
     r"(?P<team>.+?)\s+"
-    r"(?P<time>\d+.\d+)"
+    r"(?P<time>(\d+:\d+\.\d+)|(\d+.\d+))"
   )
 
   for line in lines:
