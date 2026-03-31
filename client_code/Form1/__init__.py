@@ -56,6 +56,7 @@ class Form1(Form1Template):
                     {"id":"F","title":"Time","data_key":"Time"}]
     rp = RepeatingPanel(item_template=DataRowPanel)
     data = anvil.server.call("pr_display","Track",[],[event],[],schools)
+    print(data)
     if data is None:
       return
     rp.items = [

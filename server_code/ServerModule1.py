@@ -55,59 +55,60 @@ def time_to_seconds(time):
 
 @anvil.server.callable
 def filter(sport,sort_by,runnerlist,schoollist,gradelist,lengthlist):
-  try:
-    start = time.time()
-    df = table_into_df(sport)
+  start = time.time()
+  df = table_into_df(sport)
   
-    readmask = pd.Series(True, index=df.index)
-    runner_mask = pd.Series(False, index=df.index)
-    school_mask = pd.Series(False, index=df.index)
-    grade_mask = pd.Series(False, index = df.index)
-    length_mask = pd.Series(False,index = df.index)
+  readmask = pd.Series(True, index=df.index)
+  runner_mask = pd.Series(False, index=df.index)
+  school_mask = pd.Series(False, index=df.index)
+  grade_mask = pd.Series(False, index = df.index)
+  length_mask = pd.Series(False,index = df.index)
     ####################Filter#######################
-    runner_mask = df["Runner"].str.lower().isin([r.lower() for r in runnerlist])
-    if len(runnerlist) == 0:
-      runner_mask = pd.Series(True,index =df.index)
+  runner_mask = df["Runner"].str.lower().isin([r.lower() for r in runnerlist])
+  if len(runnerlist) == 0:
+    runner_mask = pd.Series(True,index =df.index)
   
-    school_mask = df['School'].str.lower().isin([r.lower() for r in schoollist])
-    if len(schoollist) == 0:
-      school_mask = pd.Series(True,index =df.index)
+  school_mask = df['School'].str.lower().isin([r.lower() for r in schoollist])
+  if len(schoollist) == 0:
+    school_mask = pd.Series(True,index =df.index)
   
-    grade_mask = df['Grade'].astype(str).isin([r.lower() for r in gradelist])
-    if len(gradelist) == 0:
-      grade_mask = pd.Series(True,index =df.index)
+  grade_mask = df['Grade'].astype(str).isin([r.lower() for r in gradelist])
+  if len(gradelist) == 0:
+    grade_mask = pd.Series(True,index =df.index)
   
-    length_mask = df['Length'].str.lower().isin([r.lower() for r in lengthlist])
-    if len(lengthlist) == 0:
-      length_mask = pd.Series(True,index =df.index)
+  length_mask = df['Length'].str.lower().isin([r.lower() for r in lengthlist])
+  if len(lengthlist) == 0:
+    length_mask = pd.Series(True,index =df.index)
+
+  print(length_mask)
+  print(school_mask)
   
-    readmask = readmask & runner_mask & school_mask & grade_mask & length_mask
+  readmask = readmask & runner_mask & school_mask & grade_mask & length_mask
   
-    df_filtered = df.loc[readmask]
-    df_filtered = df_filtered.sort_values(by=[sort_by])
-    df_filtered =df_filtered.to_dict(orient="records")
+  df_filtered = df.loc[readmask]
+  df_filtered = df_filtered.sort_values(by=[sort_by])
+  df_filtered =df_filtered.to_dict(orient="records")
   
   
-    end = time.time()
-    print(f"filter {end-start:.4f}")
+  end = time.time()
+  print(f"filter {end-start:.4f}")
+
+  if not df_filtered:
+    return None
   
-    return(df_filtered)
-  except AttributeError:
-    print("error")
-    print(lengthlist)
+  return(df_filtered)
 
 @anvil.server.callable
 def pr_display(sport,runnerlist,lengthlist,gradelist,schoollist):
   filitered_df = filter(sport,"Runner",runnerlist,schoollist,gradelist,lengthlist)
-  df_pr = tabler(filitered_df)
-  if not {df_pr.empty}:
-    df_pr = df_pr.sort_values(by = ["time_seconds"])
-    pr_df = df_pr.groupby("Runner")['time_seconds'].min().copy()
-    pr_rows = df_pr[df_pr["time_seconds"] == df_pr["Runner"].map(pr_df)]
-    pr_rows = pr_rows.drop(columns = ['time_seconds','Date_dt']).to_dict(orient="records")
-    return(pr_rows)
-  else:
+  if filitered_df is None:
     return None
+  df_pr = tabler(filitered_df)
+  df_pr = df_pr.sort_values(by = ["time_seconds"])
+  pr_df = df_pr.groupby("Runner")['time_seconds'].min().copy()
+  pr_rows = df_pr[df_pr["time_seconds"] == df_pr["Runner"].map(pr_df)]
+  pr_rows = pr_rows.drop(columns = ['time_seconds','Date_dt']).to_dict(orient="records")
+  return(pr_rows)
 
 
 @anvil.server.callable
