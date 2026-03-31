@@ -25,8 +25,13 @@ pd.set_option('display.max_rows',None)
 
 # Helper: convert mm:ss string to total seconds
 def time_to_seconds(time_str):
-  minutes, seconds = time_str.split(":")
-  return int(minutes) * 60 + float(seconds)
+  try:
+    if float(time_str) < 60:
+      return float(time_str)
+  except ValueError:
+    print(time_str)
+    minutes, seconds = time_str.split(":")
+    return int(minutes) * 60 + float(seconds)
 
   # Helper: average split per distance in minutes:seconds
 def avg_split(time_str, distance_meters):
@@ -56,8 +61,10 @@ def parse_html(html):
   current_event_number = None
 
   # Event header regex
-
-
+  event_regex = re.compile(
+    r"Event\s+(\d+)\s+(.*?)\s+(Varsity|JV|FS|Frosh/Soph)$",
+    re.IGNORECASE
+  )
 
   # Runner regex
   runner_regex = re.compile(
@@ -65,27 +72,46 @@ def parse_html(html):
     r"(?P<name>[A-Z][a-zA-Z ,\-\(\)']+?)\s+"
     r"(?P<grade>\d{1,2})\s+"
     r"(?P<team>.+?)\s+"
-    r"(?P<time>\d+:\d+\.\d+)"
+    r"(?P<time>\d+.\d+)"
   )
 
   for line in lines:
     # Check for event header
+    ev = event_regex.search(line)
+    if ev:
+
+      current_event_number = ev.group(1)
+      event_name_dist = ev.group(2).strip()
+      current_race_type = ev.group(3).strip() if ev.group(3) else "Unknown"
+      # Extract distance (first number + Meter)
+      dist_match = re.search(r"(\d+[x]?\d*\s?Meter)", event_name_dist)
+      if "hurdles" in event_name_dist.lower():
+        current_distance = dist_match.group(1)+" Hurdles"
+      else:
+        current_distance = dist_match.group(1) if dist_match else "Unknown"
+      current_event = f"{current_event_number}_{current_distance}_{current_race_type}"
+      print(f"cd{current_distance}")
+      print(f"ce{current_event}")
+      continue
 
 
       # Check for runner row
     m = runner_regex.search(line)
     if m and current_event:
-      records.append({
-        "Placement": int(m.group("place")),
-        "Runner": m.group("name").strip(),
-        "Grade": int(m.group("grade")),
-        "School": m.group("team").strip(),
-        "Time": m.group("time"),
-        "EventID": current_event,
-        "RaceType": current_race_type,
-        "Length": current_distance
-      })
-
+      if current_distance == "Unknown":
+        continue
+      else:
+        records.append({
+          "Placement": int(m.group("place")),
+          "Runner": m.group("name").strip(),
+          "Grade": int(m.group("grade")),
+          "School": m.group("team").strip(),
+          "Time": m.group("time"),
+          "EventID": current_event,
+          "RaceType": current_race_type,
+          "Length": current_distance
+        })
+      print(f"tt{current_event,current_distance}")
   df = pd.DataFrame(records)
   def flip_name(name):
     if "," in name:
@@ -148,14 +174,14 @@ def format_for_csv(df_school,MEET_NAME,MEET_DATE, race_distance_meters=1600):
   df["Race"] = MEET_NAME
   df["Date"] = MEET_DATE
   df["Sport"] = SPORT
-  df["Avr_splits"] = df["Time"].apply(lambda t: avg_split(t, race_distance_meters))
+
   df["Date_dt"] = pd.to_datetime(df["Date"])
   df["time_seconds"] = df["Time"].apply(time_to_seconds)
 
 
   # Reorder columns
-  df = df[["School","Runner", "Race", "Placement", "Grade", "Time",
-           "Avr_splits", "Date", "Length", "RaceType", "Sport",
+  df = df[["School","Runner", "Race", "Placement", "Grade", "Time"
+           , "Date", "Length", "RaceType", "Sport",
            "Date_dt", "time_seconds"]]
 
   print(df.head())
@@ -178,7 +204,6 @@ def tabler(rows):
       "Time":r["Time"],
       "time_seconds":r["time_seconds"],
       "Length":r["Length"],
-      "Avr_splits":r['Avr_splits'],
       "RaceType":r["RaceType"]
     })
   df = pd.DataFrame(data_list)
@@ -269,7 +294,7 @@ def main():
     exists = table.search(Runner=row["Runner"],Race=row["Race"],RaceType=row["RaceType"],Time=row["Time"])
     if not list(exists):
       print(row)
-      table.add_row(School = row["School"],Runner=row["Runner"],Race=row["Race"],Placement=row["Placement"],Grade=row["Grade"],Time=row["Time"],Avr_splits=row["Avr_splits"],Date=row["Date"],Length=row["Length"],RaceType = row["RaceType"],Date_dt=row["Date_dt"],time_seconds=row["time_seconds"])
+      table.add_row(School = row["School"],Runner=row["Runner"],Race=row["Race"],Placement=row["Placement"],Grade=row["Grade"],Time=row["Time"],Date=row["Date"],Length=row["Length"],RaceType = row["RaceType"],Date_dt=row["Date_dt"],time_seconds=row["time_seconds"])
 
 
   
