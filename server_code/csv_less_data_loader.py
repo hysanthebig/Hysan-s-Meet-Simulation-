@@ -29,7 +29,6 @@ def time_to_seconds(time_str):
     if float(time_str) < 60:
       return float(time_str)
   except ValueError:
-    print(time_str)
     minutes, seconds = time_str.split(":")
     return int(minutes) * 60 + float(seconds)
 
@@ -52,7 +51,7 @@ def parse_html(html):
   text = soup.get_text("\n")
   lines = [line.strip() for line in text.splitlines() if line.strip()]
 
-  print(text)
+
 
   records = []
   current_event = None
@@ -90,8 +89,7 @@ def parse_html(html):
       else:
         current_distance = dist_match.group(1) if dist_match else "Unknown"
       current_event = f"{current_event_number}_{current_distance}_{current_race_type}"
-      print(f"cd{current_distance}")
-      print(f"ce{current_event}")
+
       continue
 
 
@@ -101,6 +99,7 @@ def parse_html(html):
       if current_distance == "Unknown":
         continue
       else:
+        print(m.group("time"))
         records.append({
           "Placement": int(m.group("place")),
           "Runner": m.group("name").strip(),
@@ -111,7 +110,7 @@ def parse_html(html):
           "RaceType": current_race_type,
           "Length": current_distance
         })
-      print(f"tt{current_event,current_distance}")
+
   df = pd.DataFrame(records)
   def flip_name(name):
     if "," in name:
@@ -120,13 +119,11 @@ def parse_html(html):
     return name
 
   df['Runner'] = df['Runner'].apply(flip_name)
-  print(df)
+
 
   lines = [line.strip() for line in soup.get_text("\n").split("\n") if line.strip()]
   
   # Print lines with index so you can see structure
-  for i, line in enumerate(lines[:20]):  # first 20 lines
-      print(i, line)
   
   # ---- ADJUST THESE AFTER YOU CHECK OUTPUT ----
   race_name = lines[1]
@@ -184,7 +181,7 @@ def format_for_csv(df_school,MEET_NAME,MEET_DATE, race_distance_meters=1600):
            , "Date", "Length", "RaceType", "Sport",
            "Date_dt", "time_seconds"]]
 
-  print(df.head())
+
   return df
 
 
@@ -287,7 +284,7 @@ def main():
     pr_df = pr_display(temp_df,[],test,[])
     new_df = pd.concat([new_df,pr_df])
 
-  print(new_df.head())
+  print(new_df)
 
   for _, row in new_df.iterrows():
     row= {k:(None if pd.isna(v) else v) for k,v in row.items()}
@@ -296,6 +293,7 @@ def main():
       print(row)
       table.add_row(School = row["School"],Runner=row["Runner"],Race=row["Race"],Placement=row["Placement"],Grade=row["Grade"],Time=row["Time"],Date=row["Date"],Length=row["Length"],RaceType = row["RaceType"],Date_dt=row["Date_dt"],time_seconds=row["time_seconds"])
 
+  print("Complete")
 
   
 
