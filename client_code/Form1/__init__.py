@@ -101,6 +101,7 @@ class Form1(Form1Template):
   @handle("los_altos_link", "click")
   def los_altos_link_click(self, **event_args):
     if "Los Altos" not in school_list:
+      print("Lost Altos")
       school_list.append("Los Altos")
     else:
       school_list.remove("Los Altos")
@@ -108,6 +109,7 @@ class Form1(Form1Template):
   @handle("san_dimas_link", "click")
   def san_dimas_link_click(self, **event_args):
     if "San Dimas" not in school_list:
+      print("San Dimas")
       school_list.append("San Dimas")
     else:
       school_list.remove("San Dimas")
@@ -116,6 +118,7 @@ class Form1(Form1Template):
   def south_hills_link_click(self, **event_args):
     if "South Hills" not in school_list:
       school_list.append("South Hills")
+      print("South hills")
 
     else:
       school_list.remove("South Hills")
