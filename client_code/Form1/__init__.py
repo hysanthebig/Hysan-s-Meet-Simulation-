@@ -6,6 +6,10 @@ from anvil.tables import app_tables
 import anvil.server
 import m3.components as m3
 
+global school_list
+school_list = []
+
+
 class Form1(Form1Template):
   def __init__(self, **properties):
     # Set Form properties and Data Bindings.
@@ -15,22 +19,22 @@ class Form1(Form1Template):
     if 1 == 0:
       anvil.server.call('launch_uni_check')
 
+
+
     if 1 == 0:
       for event in list(filter(lambda x:x is not None,anvil.server.call("count_events"))):
-        schools = ["Colony","Los Altos"]
-        print(event)
         try:
-          self.create_datagrids(event,schools)
+          self.create_datagrids(event,school_list)
         except AttributeError:
           print("error")
-  
 
 
-      
+
+
 
     # Any code you write here will run before the form opens.
 
-  
+
   def pr_screen_display(self):
     selected_runners = []
     selected_lengths = ["400 Meter"]
@@ -40,14 +44,14 @@ class Form1(Form1Template):
     data = anvil.server.call("pr_display",sport,selected_runners,selected_lengths,selected_grades,selected_schools)
 
     self.repeating_panel_1.items = [
-  {**row, "Rank": i + 1}
-  for i, row in enumerate(data)
+      {**row, "Rank": i + 1}
+      for i, row in enumerate(data)
     ]
 
 
-    
 
-    
+
+
   def create_datagrids(self,event,schools):
     grid = DataGrid()
     self.column_panel_1.add_component(grid)
@@ -68,11 +72,21 @@ class Form1(Form1Template):
     ]
 
     grid.add_component(rp)
-    
 
-    
+  @handle("link_1", "click")
+  def link_1_click(self, **event_args):
+    if "Colony" not in school_list:
+      school_list.append("Colony")
+    else:
+      school_list.remove("Colony")
 
 
-  
 
-  
+      
+
+
+
+
+
+
+
