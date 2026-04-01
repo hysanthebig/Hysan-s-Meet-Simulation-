@@ -15,10 +15,6 @@ components_by_slot:
       name: image_1
       properties: {height: 77.12139892578125, source: _/theme/IMG_4799.png}
       type: Image
-    - layout_properties: {slot: anvil-m3-link-slot}
-      name: timer_1
-      properties: {}
-      type: Timer
     event_bindings: {}
     layout_properties: {}
     name: colony_selector
