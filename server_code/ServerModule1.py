@@ -113,7 +113,7 @@ def pr_display(sport,runnerlist,lengthlist,gradelist,schoollist):
 
 @anvil.server.callable
 def count_events():
-  events = list(dict.fromkeys([r['Length'] for r in app_tables.tracktable.search()]))
+  events = list(dict.fromkeys([r['Length'] for r in app_tables.track_table.search()]))
   return events
   
   

@@ -274,12 +274,13 @@ def pr_display(df,runnerlist,lengthlist,gradelist):
   try:
     filitered_df = filter(df,"Runner",[],[],[],lengthlist)
     df_pr = tabler(filitered_df)
+    print(df_pr)
     df_pr = df_pr.sort_values(by = ["time_seconds"])
     pr_df = df_pr.groupby("Runner")['time_seconds'].min().copy()
     pr_rows = df_pr[df_pr["time_seconds"] == df_pr["Runner"].map(pr_df)]
     return(pr_rows)
   except KeyError:
-    print(lengthlist)
+    print("KeyError in Pr_display")
     
 
 #########################################################################above is filitering, below is pipeline
@@ -405,6 +406,7 @@ def uni_check(table_to_check):
 
 
   for row in table:
+    print(row)
     if row["ErrorReason"] is None:
       good_rows.append(row)
   
