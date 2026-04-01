@@ -14,7 +14,7 @@ print("COnnectected")
 # ================= CONFIG =================
 URL = "https://files.finishedresults.com/Track2026/Meets/13968-San-Dimas-vs-Bonita.html"
 SCHOOL_NAME = ["colony","san dimas","alta loma","south hills",'los altos']  # case-insensitive
-table = app_tables.tracktable
+table = app_tables.track_table
 SPORT = "Track"
 # ==========================================
 
@@ -285,7 +285,7 @@ def pr_display(df,runnerlist,lengthlist,gradelist):
 #########################################################################above is filitering, below is pipeline
 
 # ====== Main Pipeline ======
-@anvil.server.callable
+@anvil.server.background_task
 def main():
   html = get_html(URL)
   df_full,MEET_DATE,MEET_NAME = parse_html(html)
@@ -319,7 +319,7 @@ def main():
     row= {k:(None if pd.isna(v) else v) for k,v in row.items()}
     exists = table.search(Runner=row["Runner"],Length=row["Length"],School=row["School"])
     exists = list(exists)
-    if exists:
+    if not exists:
       existing_row = exists[0]
       if row['time_seconds'] < existing_row["time_seconds"]:
         print(f"NEW PR {row}")
@@ -331,7 +331,7 @@ def main():
     else:
         print(f"NEW RUNNER {row}")
         b = b+1
-        app_tables.track_table.add_row(School = row["School"],Runner=row["Runner"],Race=row["Race"],
+        app_tables.tracktable.add_row(School = row["School"],Runner=row["Runner"],Race=row["Race"],
                      Placement=row["Placement"],Grade=row["Grade"],Time=row["Time"]
                     ,Date=row["Date"],Length=row["Length"],RaceType = row["RaceType"],
                     Date_dt=row["Date_dt"],time_seconds=row["time_seconds"],ErrorReason = row["ErrorReason"])
