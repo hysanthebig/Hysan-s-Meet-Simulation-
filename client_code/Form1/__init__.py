@@ -22,12 +22,7 @@ class Form1(Form1Template):
 
 
 
-    if 1 == 0:
-      for event in list(filter(lambda x:x is not None,anvil.server.call("count_events"))):
-        try:
-          self.create_datagrids(event,school_list)
-        except AttributeError:
-          print("error")
+
 
 
 
@@ -74,6 +69,19 @@ class Form1(Form1Template):
 
     grid.add_component(rp)
 
+
+  def add_tables(self):
+    for event in list(filter(lambda x:x is not None,anvil.server.call("count_events"))):
+      try:
+        self.create_datagrids(event,school_list)
+      except AttributeError:
+        print("error")
+
+
+
+
+    ############################################# ui under here
+
   @handle("colony_selector", "click")
   def colony_selector_click(self, **event_args):
     if "Colony" not in school_list:
@@ -108,8 +116,14 @@ class Form1(Form1Template):
   def south_hills_link_click(self, **event_args):
     if "South Hills" not in school_list:
       school_list.append("South Hills")
+
     else:
       school_list.remove("South Hills")
+
+  @handle("icon_button_1", "click")
+  def icon_button_1_click(self, **event_args):
+    self.column_panel_1.clear()
+    self.add_tables()
 
 
 
