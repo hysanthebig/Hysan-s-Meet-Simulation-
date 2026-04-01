@@ -45,12 +45,17 @@ def avg_split(time_str, distance_meters):
     return f"{minutes}:{seconds:02d}"
 
 #helper for unicheck
-def error_append_table(row):
+def error_append_table(row,errorcode):
   print(row["School"],row["Runner"],row["Race"],row["Length"],row["Grade"])
+  if errorcode == "E2":
+    row["ErrorReason"] = "Time_Error"
+  elif errorcode == "E1":
+    row["ErrorReason"] = "Dupe"
+  
   app_tables.errortable.add_row(School = row["School"],Runner=row["Runner"],Race=row["Race"],
                                 Placement=row["Placement"],Grade=row["Grade"],Time=row["Time"]
                                 ,Date=row["Date"],Length=row["Length"],RaceType = row["RaceType"],
-                                Date_dt=row["Date_dt"],time_seconds=row["time_seconds"])
+                                Date_dt=row["Date_dt"],time_seconds=row["time_seconds"],ErrorReason = row["ErrorReason"])
 
 # ====== Parsing HTML ======
 def get_html(url):
@@ -300,18 +305,16 @@ def main():
     pr_df = pr_display(temp_df,[],test,[])
     new_df = pd.concat([new_df,pr_df])
 
-  to_be_checked = new_df.iterrows()
-  error_list = uni_check(to_be_checked)
-  if error_list:
-    for row in error_list:
-      print(row)
+  to_be_checked = new_df.to_dict(orient = "records")
+  goodrows = uni_check(to_be_checked)
+  
     
   
     
 
 
 
-  for _, row in new_df.iterrows():
+  for _, row in tabler(goodrows).iterrows():
     row= {k:(None if pd.isna(v) else v) for k,v in row.items()}
     exists = table.search(Runner=row["Runner"],Length=row["Length"],School=row["School"])
     exists = list(exists)
@@ -320,17 +323,17 @@ def main():
       if row['time_seconds'] < existing_row["time_seconds"]:
         print(f"NEW PR {row}")
         a = a+1
-        #existing_row.update(School = row["School"],Runner=row["Runner"],Race=row["Race"],
-                    # Placement=row["Placement"],Grade=row["Grade"],Time=row["Time"]
-                    # ,Date=row["Date"],Length=row["Length"],RaceType = row["RaceType"],
-                   #  Date_dt=row["Date_dt"],time_seconds=row["time_seconds"])
+        existing_row.update(School = row["School"],Runner=row["Runner"],Race=row["Race"],
+                     Placement=row["Placement"],Grade=row["Grade"],Time=row["Time"]
+                     ,Date=row["Date"],Length=row["Length"],RaceType = row["RaceType"],
+                     Date_dt=row["Date_dt"],time_seconds=row["time_seconds"],ErrorReason = row["ErrorReason"])
     else:
         print(f"NEW RUNNER {row}")
         b = b+1
-        #table.add_row(School = row["School"],Runner=row["Runner"],Race=row["Race"],
-                    # Placement=row["Placement"],Grade=row["Grade"],Time=row["Time"]
-                   # ,Date=row["Date"],Length=row["Length"],RaceType = row["RaceType"],
-                  #   Date_dt=row["Date_dt"],time_seconds=row["time_seconds"])
+        table.add_row(School = row["School"],Runner=row["Runner"],Race=row["Race"],
+                     Placement=row["Placement"],Grade=row["Grade"],Time=row["Time"]
+                    ,Date=row["Date"],Length=row["Length"],RaceType = row["RaceType"],
+                    Date_dt=row["Date_dt"],time_seconds=row["time_seconds"],ErrorReason = row["ErrorReason"])
       
   return a,b
   
@@ -339,44 +342,60 @@ def main():
 def uni_check(table_to_check):
   table = table_to_check
   error_list = []
+  seen = set()
+  dupes = []
+  counts = {}
   for row in table:
     error_occured = False
-    exists = list(table(Runner=row["Runner"],Length=row["Length"],School=row["School"]))
-    number_of_similar_rows = len(exists)
-    if number_of_similar_rows > 1:
+    row["ErrorReason"] = None
+    exist_key = (row["Runner"],row["School"],row["Time"])
+    counts[exist_key] = counts.get(exist_key, 0) + 1
+    if exist_key in seen:
+      dupes.append(row)
+    else:
+      seen.add(exist_key)
+    if counts[exist_key] > 1:
       print("Warning, duplicate detected")
-      error_append_table(row)
+      error_append_table(row,"E1")
       error_occured = True
+      
     if row["Length"] == "1600 Meter":
       if row["time_seconds"] < 240:
-        error_append_table(row)
+        error_append_table(row,"E2")
         error_occured = True
+      
     elif row["Length"] == "800 Meter":
       if row["time_seconds"] < 100:
-        error_append_table(row)
+        error_append_table(row,"E2")
         error_occured = True
+        
     elif row["Length"] == "3200 Meter":
       if row["time_seconds"] < 570:
-        error_append_table(row)
+        error_append_table(row,"E2")
         error_occured = True
+      
     elif row["Length"] == "100 Meter":
       if row["time_seconds"] > 30:
-        error_append_table(row)
+        error_append_table(row,"E2")
         error_occured = True
+        
     elif row["Length"] == "200 Meter":
       if row["time_seconds"] > 60:
-        error_append_table(row)       
+        error_append_table(row,"E2")       
         error_occured = True
+        
     elif row["Length"] == "400 Meter":
       if row["time_seconds"] < 40:
         error_occured = True
-        error_append_table(row)
+        error_append_table(row,"E2")
+      
         
     if error_occured:
       error_list.append(row)
 
   if error_list:
-    return error_list
+    good_rows = [row for row in table if not row.get("ErrorReason")]
+    return good_rows
 
       
   print("UNI-Check completed")
