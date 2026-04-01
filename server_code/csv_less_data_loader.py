@@ -424,6 +424,6 @@ def background_main():
 
 @anvil.server.callable
 def launch_uni_check():
-  anvil.server.launch_background_task("uni_check",tabler(table))
+  anvil.server.launch_background_task("uni_check",table)
 
 
