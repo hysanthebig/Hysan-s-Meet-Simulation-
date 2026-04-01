@@ -10,7 +10,11 @@ components_by_slot:
     name: text_1
     properties: {text: Select Schools}
     type: form:dep_lin1x4oec0ytd:_Components.Text
-  - components: []
+  - components:
+    - layout_properties: {slot: anvil-m3-link-slot}
+      name: image_1
+      properties: {height: 77.12139892578125, source: _/theme/IMG_4799.png}
+      type: Image
     event_bindings: {}
     layout_properties: {}
     name: colony_selector
@@ -18,7 +22,12 @@ components_by_slot:
       spacing:
         margin: [null, null, null, null]
     type: form:dep_lin1x4oec0ytd:_Components.Link
-  - event_bindings: {}
+  - components:
+    - layout_properties: {slot: anvil-m3-link-slot}
+      name: image_2
+      properties: {height: 76.68112182617188, source: _/theme/IMG_4800.png}
+      type: Image
+    event_bindings: {}
     layout_properties: {}
     name: alta_loma_link
     properties: {}
@@ -28,18 +37,20 @@ components_by_slot:
     name: los_altos_link
     properties: {}
     type: form:dep_lin1x4oec0ytd:_Components.Link
-  - layout_properties: {}
+  - event_bindings: {}
+    layout_properties: {}
     name: san_dimas_link
     properties: {}
     type: form:dep_lin1x4oec0ytd:_Components.Link
-  - layout_properties: {}
+  - event_bindings: {}
+    layout_properties: {}
     name: south_hills_link
     properties: {align: left}
     type: form:dep_lin1x4oec0ytd:_Components.Link
   sidesheet:
   - layout_properties: {}
-    name: image_1
-    properties: {height: 77.12139892578125, source: _/theme/IMG_4803.webp}
+    name: image_3
+    properties: {source: _/theme/IMG_4801.png}
     type: Image
 is_package: true
 layout: {type: 'form:dep_lin1x4oec0ytd:Layouts.NavigationRailLayout'}

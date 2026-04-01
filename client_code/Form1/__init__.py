@@ -1,6 +1,6 @@
 from ._anvil_designer import Form1Template
 import anvil
-from anvil import Form1
+from anvil import *
 import anvil.tables as tables
 import anvil.tables.query as q
 from anvil.tables import app_tables
@@ -90,12 +90,26 @@ class Form1(Form1Template):
     else:
       school_list.remove("Alta Loma")
 
-  @anvil.handle("los_altos_link", "click")
+  @handle("los_altos_link", "click")
   def los_altos_link_click(self, **event_args):
-    """This method is called clicked"""
-    pass
-  
+    if "Los Altos" not in school_list:
+      school_list.append("Los Altos")
+    else:
+      school_list.remove("Los Altos")
 
+  @handle("san_dimas_link", "click")
+  def san_dimas_link_click(self, **event_args):
+    if "San Dimas" not in school_list:
+      school_list.append("San Dimas")
+    else:
+      school_list.remove("San Dimas")
+
+  @handle("south_hills_link", "click")
+  def south_hills_link_click(self, **event_args):
+    if "South Hills" not in school_list:
+      school_list.append("South Hills")
+    else:
+      school_list.remove("South Hills")
 
 
 
