@@ -73,12 +73,24 @@ class Form1(Form1Template):
 
     grid.add_component(rp)
 
-  @handle("link_1", "click")
-  def link_1_click(self, **event_args):
+  @handle("colony_selector", "click")
+  def colony_selector_click(self, **event_args):
     if "Colony" not in school_list:
       school_list.append("Colony")
+      print("added")
     else:
       school_list.remove("Colony")
+      print("removed")
+
+  @handle("alta_loma_link", "click")
+  def alta_loma_link_click(self, **event_args):
+        if "Alta Loma" not in school_list:
+      school_list.append("Alta Loma")
+      print("added")
+    else:
+      school_list.remove("Alta Loma")
+      pri
+
 
 
 
