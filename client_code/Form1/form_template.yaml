@@ -5,18 +5,10 @@ components_by_slot:
     name: column_panel_1
     properties: {}
     type: ColumnPanel
-  - components:
-    - components: []
-      event_bindings: {}
-      layout_properties: {slot: anvil-m3-link-slot}
-      name: south_hills_link
-      properties: {align: left}
-      type: form:dep_lin1x4oec0ytd:_Components.Link
-    event_bindings: {}
-    layout_properties: {}
-    name: los_altos_link
-    properties: {}
-    type: form:dep_lin1x4oec0ytd:_Components.Link
+  - layout_properties: {}
+    name: image_4
+    properties: {height: -103.41229248046875, source: _/theme/IMG_4802.png}
+    type: Image
   navigation:
   - event_bindings: {}
     layout_properties: {}
@@ -50,14 +42,16 @@ components_by_slot:
     properties: {}
     type: form:dep_lin1x4oec0ytd:_Components.Link
   - components:
-    - layout_properties: {slot: anvil-m3-link-slot}
-      name: image_4
-      properties: {height: -103.41229248046875, source: _/theme/IMG_4802.png}
-      type: Image
-    - layout_properties: {slot: anvil-m3-link-slot}
-      name: image_3
-      properties: {height: 52.988494873046875, source: _/theme/IMG_4804.webp}
-      type: Image
+    - components:
+      - layout_properties: {slot: anvil-m3-link-slot}
+        name: image_5
+        properties: {height: 70.72109985351562, source: _/theme/IMG_4803.webp}
+        type: Image
+      event_bindings: {}
+      layout_properties: {slot: anvil-m3-link-slot}
+      name: south_hills_link
+      properties: {align: left}
+      type: form:dep_lin1x4oec0ytd:_Components.Link
     event_bindings: {}
     layout_properties: {}
     name: san_dimas_link
@@ -65,8 +59,14 @@ components_by_slot:
     type: form:dep_lin1x4oec0ytd:_Components.Link
   sidesheet:
   - layout_properties: {}
-    name: image_5
-    properties: {height: 70.72109985351562, source: _/theme/IMG_4803.webp}
+    name: image_3
+    properties: {height: 52.988494873046875, source: _/theme/IMG_4804.webp}
     type: Image
+  - components: []
+    event_bindings: {}
+    layout_properties: {}
+    name: los_altos_link
+    properties: {}
+    type: form:dep_lin1x4oec0ytd:_Components.Link
 is_package: true
 layout: {type: 'form:dep_lin1x4oec0ytd:Layouts.NavigationRailLayout'}
