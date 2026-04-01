@@ -18,15 +18,28 @@ components_by_slot:
       spacing:
         margin: [null, null, null, null]
     type: form:dep_lin1x4oec0ytd:_Components.Link
-  - layout_properties: {}
-    name: image_1
-    properties: {height: 77.12139892578125, source: _/theme/IMG_4803.webp}
-    type: Image
   - event_bindings: {}
     layout_properties: {}
     name: alta_loma_link
     properties: {}
     type: form:dep_lin1x4oec0ytd:_Components.Link
-  sidesheet: []
+  - event_bindings: {}
+    layout_properties: {}
+    name: los_altos_link
+    properties: {}
+    type: form:dep_lin1x4oec0ytd:_Components.Link
+  - layout_properties: {}
+    name: san_dimas_link
+    properties: {}
+    type: form:dep_lin1x4oec0ytd:_Components.Link
+  - layout_properties: {}
+    name: south_hills_link
+    properties: {align: left}
+    type: form:dep_lin1x4oec0ytd:_Components.Link
+  sidesheet:
+  - layout_properties: {}
+    name: image_1
+    properties: {height: 77.12139892578125, source: _/theme/IMG_4803.webp}
+    type: Image
 is_package: true
 layout: {type: 'form:dep_lin1x4oec0ytd:Layouts.NavigationRailLayout'}
