@@ -11,12 +11,12 @@ class Form1(Form1Template):
     # Set Form properties and Data Bindings.
     self.data_grid_1.rows_per_page = 0
     self.init_components(**properties)
-    if 1 == 1:
-      anvil.server.call('background_main')
     if 1 == 0:
+      anvil.server.call('background_main')
+    if 1 == 1:
       anvil.server.call('launch_uni_check')
 
-    if 1 == 0:
+    if 1 == 1:
       for event in list(filter(lambda x:x is not None,anvil.server.call("count_events"))):
         schools = ["Colony","Los Altos"]
         print(event)

@@ -14,7 +14,7 @@ print("COnnectected")
 # ================= CONFIG =================
 URL = "https://files.finishedresults.com/Track2026/Meets/13968-San-Dimas-vs-Bonita.html"
 SCHOOL_NAME = ["colony","san dimas","alta loma","south hills",'los altos']  # case-insensitive
-table = app_tables.track_table
+table = app_tables.tracktable
 SPORT = "Track"
 # ==========================================
 
@@ -274,7 +274,6 @@ def pr_display(df,runnerlist,lengthlist,gradelist):
   try:
     filitered_df = filter(df,"Runner",[],[],[],lengthlist)
     df_pr = tabler(filitered_df)
-    print(df_pr)
     df_pr = df_pr.sort_values(by = ["time_seconds"])
     pr_df = df_pr.groupby("Runner")['time_seconds'].min().copy()
     pr_rows = df_pr[df_pr["time_seconds"] == df_pr["Runner"].map(pr_df)]
@@ -309,11 +308,10 @@ def main():
   to_be_checked = new_df.to_dict(orient = "records")
   goodrows = uni_check(to_be_checked)
   print(goodrows)
-  
-    
-  
-    
 
+  error_df = tabler(app_tables.ErrorTable.search())
+  print(error_df)
+  
 
 
   for _, row in tabler(goodrows).iterrows():
@@ -356,11 +354,15 @@ def uni_check(table_to_check):
       dupes.append(row)
     else:
       seen.add(exist_key)
-    if counts[exist_key] > 1:
-      print("Warning, duplicate detected")
-      error_append_table(row,"E1")
-      row["ErrorReason"] = "Dupe"
-      error_occured = True
+
+#############UNICHECK FOR DUPE, do 1 == 1 to activate#####################
+    if  1 == 1:
+      if counts[exist_key] > 1:
+        print("Warning, duplicate detected")
+        error_append_table(row,"E1")
+        row["ErrorReason"] = "Dupe"
+        error_occured = True
+
       
     if row["Length"] == "1600 Meter":
       if row["time_seconds"] < 240:
@@ -422,6 +424,6 @@ def background_main():
 
 @anvil.server.callable
 def launch_uni_check():
-  anvil.server.launch_background_task("uni_check")
+  anvil.server.launch_background_task("uni_check",tabler(table))
 
 
