@@ -70,7 +70,7 @@ components_by_slot:
   sidesheet:
   - layout_properties: {}
     name: rich_text_1
-    properties: {}
+    properties: {align: center, font_size: 25}
     type: RichText
   - layout_properties: {}
     name: text_2
