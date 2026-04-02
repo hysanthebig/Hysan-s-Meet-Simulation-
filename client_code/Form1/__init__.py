@@ -64,19 +64,15 @@ class Form1(Form1Template):
     if data is None:
       return
     rp.items = [
-      {**row, "Rank": i + 1}
+      {
+        **row,
+        "Rank": i + 1,
+        "Points": 5 if i == 0 else 3 if i == 1 else 1 if i == 2 else 0
+      }
       for i, row in enumerate(data)
     ]
-    for i, row in enumerate(data):
-      points = 0
-      if i == 0:
-        points = 5
-      elif i == 1:
-        points  = 3
-      elif i == 2:
-        points  = 1
-      rp.items.append([{**row,"Points": points}])
-    
+
+
 
     grid.add_component(rp)
 
@@ -125,7 +121,7 @@ class Form1(Form1Template):
     else:
       school_list.remove("San Dimas")
 
-  @handle("south_hills_link", "click")
+  @handle("south_hills_list", "click")
   def south_hills_link_click(self, **event_args):
     if "South Hills" not in school_list:
       school_list.append("South Hills")
