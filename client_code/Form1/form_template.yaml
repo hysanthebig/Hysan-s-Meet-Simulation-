@@ -15,16 +15,6 @@ components_by_slot:
     name: text_1
     properties: {bold: true, icon_color: 'theme:On Background', scale: small, text: Select Schools}
     type: form:dep_lin1x4oec0ytd:_Components.Text
-  - layout_properties: {}
-    name: image_5
-    properties: {height: 70.72109985351562, source: _/theme/IMG_4803.webp, visible: true}
-    type: Image
-  - components: []
-    event_bindings: {}
-    layout_properties: {}
-    name: south_hills_link
-    properties: {align: left, bold: false, italic: false, text: south_hills_link, text_color: '', underline: false, visible: true}
-    type: form:dep_lin1x4oec0ytd:_Components.Link
   - components:
     - layout_properties: {slot: anvil-m3-link-slot}
       name: image_1
@@ -36,6 +26,10 @@ components_by_slot:
     properties:
       spacing:
         margin: [null, null, null, null]
+    type: form:dep_lin1x4oec0ytd:_Components.Link
+  - layout_properties: {}
+    name: south_hills_list
+    properties: {}
     type: form:dep_lin1x4oec0ytd:_Components.Link
   - components:
     - layout_properties: {slot: anvil-m3-link-slot}
@@ -67,6 +61,10 @@ components_by_slot:
     name: los_altos_link
     properties: {}
     type: form:dep_lin1x4oec0ytd:_Components.Link
-  sidesheet: []
+  sidesheet:
+  - layout_properties: {}
+    name: image_5
+    properties: {height: 70.72109985351562, source: _/theme/IMG_4803.webp, visible: true}
+    type: Image
 is_package: true
 layout: {type: 'form:dep_lin1x4oec0ytd:Layouts.NavigationRailLayout'}
