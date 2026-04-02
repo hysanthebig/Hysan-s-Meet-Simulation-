@@ -38,16 +38,6 @@ components_by_slot:
     properties: {}
     type: form:dep_lin1x4oec0ytd:_Components.Link
   - components:
-    - components:
-      - layout_properties: {slot: anvil-m3-link-slot}
-        name: image_5
-        properties: {height: 70.72109985351562, source: _/theme/IMG_4803.webp, visible: true}
-        type: Image
-      event_bindings: {}
-      layout_properties: {slot: anvil-m3-link-slot}
-      name: south_hills_link
-      properties: {align: left, underline: false, visible: false}
-      type: form:dep_lin1x4oec0ytd:_Components.Link
     - layout_properties: {slot: anvil-m3-link-slot}
       name: image_4
       properties: {height: -103.41229248046875, source: _/theme/IMG_4802.png}
@@ -67,6 +57,16 @@ components_by_slot:
     name: los_altos_link
     properties: {}
     type: form:dep_lin1x4oec0ytd:_Components.Link
-  sidesheet: []
+  sidesheet:
+  - components:
+    - layout_properties: {slot: anvil-m3-link-slot}
+      name: image_5
+      properties: {height: 70.72109985351562, source: _/theme/IMG_4803.webp, visible: true}
+      type: Image
+    event_bindings: {}
+    layout_properties: {}
+    name: south_hills_link
+    properties: {align: left, text: south_hills_link, underline: false, visible: true}
+    type: form:dep_lin1x4oec0ytd:_Components.Link
 is_package: true
 layout: {type: 'form:dep_lin1x4oec0ytd:Layouts.NavigationRailLayout'}
