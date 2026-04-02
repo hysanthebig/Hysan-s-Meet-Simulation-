@@ -49,6 +49,9 @@ class Form1(Form1Template):
 
 
   def create_datagrids(self,event,schools):
+    school_1, school_2 = (schools + [None,None])[:2]
+    school_1_points = 0
+    school_2_points = 0
     grid = DataGrid()
     self.column_panel_1.add_component(grid)
     grid.columns = [{"id":"A","title": event,"data_key":"Rank"},
@@ -60,7 +63,6 @@ class Form1(Form1Template):
                     {"id":"G","title":"Points","data_key":"Points"}]
     rp = RepeatingPanel(item_template=DataRowPanel)
     data = anvil.server.call("pr_display","Track",[],[event],[],schools)
-    print(data)
     if data is None:
       return
     rp.items = [
@@ -71,16 +73,28 @@ class Form1(Form1Template):
       }
       for i, row in enumerate(data)
     ]
+    for row in rp.items[:3]:
+      if school_1 == row["School"]:
+        school_1_points = school_1_points + row["Points"]
+      elif school_2 == row["School"]:
+        school_2_points = school_2_points + row["Points"]
 
-
-
+      
     grid.add_component(rp)
+    return(school_1_points,school_2_points)
 
 
   def add_tables(self):
+    school_1_total_points = 0
+    school_2_total_points = 0
+    school_1, school_2 = (school_list + [None,None])[:2]
     for event in list(filter(lambda x:x is not None,anvil.server.call("count_events"))):
       try:
-        self.create_datagrids(event,school_list)
+        school_1_points,school_2_points = self.create_datagrids(event,school_list)
+        school_1_total_points = school_1_points + school_1_total_points
+        school_2_total_points = school_2_points + school_2_total_points
+        print(school_1,school_1_total_points,school_2,school_2_total_points)
+        
       except AttributeError:
         print("error")
 

@@ -80,8 +80,6 @@ def filter(sport,sort_by,runnerlist,schoollist,gradelist,lengthlist):
   if len(lengthlist) == 0:
     length_mask = pd.Series(True,index =df.index)
 
-  print(length_mask)
-  print(school_mask)
   
   readmask = readmask & runner_mask & school_mask & grade_mask & length_mask
   
