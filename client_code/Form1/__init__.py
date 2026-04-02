@@ -98,6 +98,13 @@ class Form1(Form1Template):
       except AttributeError:
         print("error")
 
+      if school_1_total_points < school_2_total_points:
+        winning_school = school_2
+      else:
+        winning_school = school_1
+      self.rich_text_1.content = (f"{winning_school} is winning.")
+      self.text_2.text = (f"{school_1} has {school_1_total_points} points. \n {school_2} has {school_2_total_points} Points")
+
 
 
 
