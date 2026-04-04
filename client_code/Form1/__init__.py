@@ -20,6 +20,9 @@ class Form1(Form1Template):
     if 1 == 0:
       anvil.server.call('launch_uni_check')
 
+  
+    
+
 
 
 
@@ -88,12 +91,15 @@ class Form1(Form1Template):
     school_1_total_points = 0
     school_2_total_points = 0
     school_1, school_2 = (school_list + [None,None])[:2]
-    for event in list(filter(lambda x:x is not None,anvil.server.call("count_events"))):
+    event_list = list(filter(lambda x:x is not None,anvil.server.call("count_events")))
+    event_list.remove("100 Meter Hurdles")
+    for event in event_list:
       try:
         school_1_points,school_2_points = self.create_datagrids(event,school_list)
         school_1_total_points = school_1_points + school_1_total_points
         school_2_total_points = school_2_points + school_2_total_points
-        print(school_1,school_1_total_points,school_2,school_2_total_points)
+    
+        self.text_3.text += (f"{event} - {school_1}-{school_1_points}, {school_2}-{school_2_points} \n")
         
       except AttributeError:
         print("error")
@@ -104,7 +110,8 @@ class Form1(Form1Template):
         winning_school = school_1
       self.rich_text_1.content = (f"{winning_school} is winning.")
       self.text_2.text = (f"{school_1} has {school_1_total_points} points. \n {school_2} has {school_2_total_points} Points")
-
+      
+      
 
 
 
@@ -155,6 +162,16 @@ class Form1(Form1Template):
   def icon_button_1_click(self, **event_args):
     self.column_panel_1.clear()
     self.add_tables()
+
+  @handle("text_3", "show")
+  def text_3_show(self, **event_args):
+    """This method is called when the component is shown on the screen."""
+    pass
+
+  @handle("button_4", "click")
+  def button_4_click(self, **event_args):
+    """This method is called when the component is clicked."""
+    pass
 
 
 
