@@ -9,6 +9,11 @@ import m3.components as m3
 
 global school_list
 school_list = []
+sprint_events =["100 Meter","200 Meter","400 Meter"]
+distance_events = ["800 Meter","1600 Meter","3200 Meter"]
+hurdle_events = ["110 Meter Hurdles","300 Meter Hurdles"]
+relay_events = ["4x100 Meter", "4x400 Meter", "4x800 Meter"]
+
 
 
 class Form1(Form1Template):
@@ -16,9 +21,10 @@ class Form1(Form1Template):
     # Set Form properties and Data Bindings.
     self.init_components(**properties)
     if 1 == 0:
-      anvil.server.call('background_main')
-    if 1 == 0:
+      anvil.server.call('main')
+    if 1 == 1:
       anvil.server.call('launch_uni_check')
+
 
   
     
@@ -92,7 +98,19 @@ class Form1(Form1Template):
     school_2_total_points = 0
     school_1, school_2 = (school_list + [None,None])[:2]
     event_list = list(filter(lambda x:x is not None,anvil.server.call("count_events")))
+    
+
+      
     event_list.remove("100 Meter Hurdles")
+    if self.button_1.appearance == "outlined":
+        event_list = [e for e in event_list if e not in sprint_events]
+    if self.button_2.appearance == "outlined":
+      event_list = [e for e in event_list if e not in relay_events] 
+    if self.button_3.appearance == "outlined":
+      event_list = [e for e in event_list if e not in hurdle_events]
+    if self.button_4.appearance == "outlined":
+      event_list = [e for e in event_list if e not in distance_events]
+    
     for event in event_list:
       try:
         school_1_points,school_2_points = self.create_datagrids(event,school_list)
@@ -163,15 +181,35 @@ class Form1(Form1Template):
     self.column_panel_1.clear()
     self.add_tables()
 
-  @handle("text_3", "show")
-  def text_3_show(self, **event_args):
-    """This method is called when the component is shown on the screen."""
-    pass
+  @handle("button_1", "click")
+  def button_1_click(self, **event_args):
+    if self.button_1.appearance == "filled":
+      self.button_1.appearance = "outlined"
+    else:
+      self.button_1.appearance = "filled"
+
+  @handle("button_2", "click")
+  def button_2_click(self, **event_args):
+    if self.button_2.appearance == "filled":
+      self.button_2.appearance = "outlined"
+    else:
+      self.button_2.appearance = "filled"
+
+  @handle("button_3", "click")
+  def button_3_click(self, **event_args):
+    if self.button_3.appearance == "filled":
+      self.button_3.appearance = "outlined"
+    else:
+      self.button_3.appearance = "filled"
 
   @handle("button_4", "click")
   def button_4_click(self, **event_args):
-    """This method is called when the component is clicked."""
-    pass
+    if self.button_4.appearance == "filled":
+      self.button_4.appearance = "outlined"
+    else:
+      self.button_4.appearance = "filled"
+
+
 
 
 
