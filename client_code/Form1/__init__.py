@@ -22,8 +22,11 @@ class Form1(Form1Template):
     self.init_components(**properties)
     if 1 == 0:
       anvil.server.call('main')
-    if 1 == 1:
+    if 1 == 0:
       anvil.server.call('launch_uni_check')
+      ######ONLY USE ONCE ERROR TABLE HAS BEEN CHECKED
+    if 1 == 0:
+      anvil.server.call('add_error_table_to_correct')
 
 
   

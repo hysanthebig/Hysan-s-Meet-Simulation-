@@ -12,7 +12,7 @@ import time
 
 print("COnnectected")
 # ================= CONFIG =================
-URL = "https://files.finishedresults.com/Track2026/Meets/13777-South-Hills-vs-Los-Altos.html"
+URL = "https://files.finishedresults.com/Track2026/Meets/13504-Covina-Invitational.html"
 SCHOOL_NAME = ["colony","san dimas","alta loma","south hills",'los altos']  # case-insensitive
 table = app_tables.tracktable
 SPORT = "Track"
@@ -425,4 +425,12 @@ def background_main():
 def launch_uni_check():
   anvil.server.launch_background_task("uni_check",table.search())
 
-
+@anvil.server.callable
+def add_error_table_to_correct():
+  error_table = app_tables.errortable.search()
+  for row in error_table:
+    app_tables.tracktable.add_row(School = row["School"],Runner=row["Runner"],Race=row["Race"],
+                                  Placement=row["Placement"],Grade=row["Grade"],Time=row["Time"]
+                                  ,Date=row["Date"],Length=row["Length"],RaceType = row["RaceType"],
+                                  Date_dt=row["Date_dt"],time_seconds=row["time_seconds"],ErrorReason = row["ErrorReason"])
+    print(row)
