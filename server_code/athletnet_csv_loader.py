@@ -1,0 +1,37 @@
+import anvil.tables as tables
+import anvil.tables.query as q
+from anvil.tables import app_tables
+import anvil.server
+import pandas as pd
+# This is a server module. It runs on the Anvil server,
+# rather than in the user's browser.
+#
+# To allow anvil.server.call() to call functions here, we mark
+# them with @anvil.server.callable.
+# Here is an example - you can replace it with your own:
+#
+# @anvil.server.callable
+# def say_hello(name):
+#   print("Hello, " + name + "!")
+#   return 42
+#
+pd.set_option('display.max_columns',None)
+pd.set_option('display.width',None)
+pd.set_option('display.max_rows',None)
+
+
+def import_csf_to_table():
+  with anvil.files.data_files.open("athletic_net.csv") as f:
+    df = pd.read_csv(f)
+  print("DF Located")
+  for _, row in df.iterrows():
+    row= {k:(None if pd.isna(v) else v) for k,v in row.items()}
+    exists = app_tables.athletic_table.search(Runner=row["Runner"],Race=row["Race"],RaceType=row["RaceType"],Time=row["Time"])
+    if not list(exists):
+      print(row)
+      app_tables.track_table.add_row(
+        Runner=row["Runner"],Race=row["Race"],Placement=row["Placement"],Grade=row["Grade"],Time=row["Time"],Avr_splits=row["Avr splits"],Date=row["Date"],Length=row["Length"],RaceType = row["RaceType"],Date_dt=row["Date_dt"],time_seconds=row["time_seconds"])
+  print("Completed")
+  return "Done"
+
+import_csf_to_table()
