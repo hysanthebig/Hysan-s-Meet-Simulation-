@@ -112,13 +112,15 @@ components_by_slot:
     name: flow_panel_2
     properties: {}
     type: FlowPanel
-  - event_bindings: {}
+  - data_bindings: []
+    event_bindings: {}
     layout_properties: {}
     name: dropdown_menu_1
     properties:
+      allow_none: false
       items: [Male, Female, '']
       label: Gender
-      placeholder: ''
+      placeholder: Male
     type: form:dep_lin1x4oec0ytd:_Components.DropdownMenu
 is_package: true
 layout: {type: 'form:dep_lin1x4oec0ytd:Layouts.NavigationRailLayout'}

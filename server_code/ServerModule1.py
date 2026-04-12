@@ -83,7 +83,7 @@ def filter(sport,sort_by,runnerlist,schoollist,gradelist,lengthlist,gender):
   if len(lengthlist) == 0:
     length_mask = pd.Series(True,index =df.index)
 
-  gender_mask = df['Gender'].str.contains(gender.strip(), case=False, na=False)
+  gender_mask = df['Gender'].str.lower() == gender.strip().lower()
 
 
   
@@ -112,7 +112,7 @@ def pr_display(sport,runnerlist,lengthlist,gradelist,schoollist,gender):
   df_pr = df_pr.sort_values(by = ["time_seconds"])
   pr_df = df_pr.groupby("Runner")['time_seconds'].min().copy()
   pr_rows = df_pr[df_pr["time_seconds"] == df_pr["Runner"].map(pr_df)]
-  pr_rows = pr_rows.drop(columns = ['time_seconds','Date_dt']).to_dict(orient="records")
+  pr_rows = pr_rows.drop(columns = ['time_seconds']).to_dict(orient="records")
   return(pr_rows)
 
 
