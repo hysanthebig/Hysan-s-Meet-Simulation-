@@ -46,7 +46,7 @@ def import_csf_to_table():
     print(row)
 
     app_tables.athletic_table.add_row(
-      School = row["School"],Runner=row["Runner"],Race=row["Race"],Grade=row["Grade"],Time=row["Time"],Date=row["Date"],Length=row["Length"],time_seconds = row["time_seconds"])
+      School = row["School"],Runner=row["Runner"],Race=row["Race"],Grade=row["Grade"],Gender = row['Gender'],Time=row["Time"],Date=row["Date"],Length=row["Length"],time_seconds = row["time_seconds"])
   print("Completed")
   return "Done"
 

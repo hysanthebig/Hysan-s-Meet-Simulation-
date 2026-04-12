@@ -27,7 +27,7 @@ class Form1(Form1Template):
       ######ONLY USE ONCE ERROR TABLE HAS BEEN CHECKED
     if 1 == 0:
       anvil.server.call('add_error_table_to_correct')
-    anvil.server.call('import_csv_caller')
+      anvil.server.call('import_csv_caller')
 
 
   
@@ -50,7 +50,8 @@ class Form1(Form1Template):
     selected_grades = []
     selected_schools = ["Alta Loma"]
     sport = "Track"
-    data = anvil.server.call("pr_display",sport,selected_runners,selected_lengths,selected_grades,selected_schools)
+    
+    data = anvil.server.call("pr_display",sport,selected_runners,selected_lengths,selected_grades,selected_schools,gender)
 
     self.repeating_panel_1.items = [
       {**row, "Rank": i + 1}
@@ -63,6 +64,8 @@ class Form1(Form1Template):
 
   def create_datagrids(self,event,schools):
     school_1, school_2 = (schools + [None,None])[:2]
+    gender = self.dropdown_menu_1.item
+    print(gender)
     school_1_points = 0
     school_2_points = 0
     grid = DataGrid()
@@ -75,7 +78,7 @@ class Form1(Form1Template):
                     {"id":"F","title":"Time","data_key":"Time"},
                     {"id":"G","title":"Points","data_key":"Points"}]
     rp = RepeatingPanel(item_template=DataRowPanel)
-    data = anvil.server.call("pr_display","Track",[],[event],[],schools)
+    data = anvil.server.call("pr_display","Track",[],[event],[],schools,gender)
     if data is None:
       return
     rp.items = [
@@ -106,7 +109,8 @@ class Form1(Form1Template):
     
 
       
-    event_list.remove("100 Meter Hurdles")
+    print(event_list)
+
     if self.button_1.appearance == "outlined":
         event_list = [e for e in event_list if e not in sprint_events]
     if self.button_2.appearance == "outlined":
@@ -117,15 +121,13 @@ class Form1(Form1Template):
       event_list = [e for e in event_list if e not in distance_events]
     
     for event in event_list:
-      try:
-        school_1_points,school_2_points = self.create_datagrids(event,school_list)
-        school_1_total_points = school_1_points + school_1_total_points
-        school_2_total_points = school_2_points + school_2_total_points
+      school_1_points,school_2_points = self.create_datagrids(event,school_list)
+      school_1_total_points = school_1_points + school_1_total_points
+      school_2_total_points = school_2_points + school_2_total_points
     
-        self.text_3.text += (f"{event} - {school_1}-{school_1_points}, {school_2}-{school_2_points} \n")
+      self.text_3.text += (f"{event} - {school_1}-{school_1_points}, {school_2}-{school_2_points} \n")
         
-      except AttributeError:
-        print("error")
+
 
       if school_1_total_points < school_2_total_points:
         winning_school = school_2
