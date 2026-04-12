@@ -27,6 +27,7 @@ class Form1(Form1Template):
       ######ONLY USE ONCE ERROR TABLE HAS BEEN CHECKED
     if 1 == 0:
       anvil.server.call('add_error_table_to_correct')
+    anvil.server.call('import_csv_caller')
 
 
   
@@ -97,6 +98,7 @@ class Form1(Form1Template):
 
 
   def add_tables(self):
+    self.text_3.clear()
     school_1_total_points = 0
     school_2_total_points = 0
     school_1, school_2 = (school_list + [None,None])[:2]
