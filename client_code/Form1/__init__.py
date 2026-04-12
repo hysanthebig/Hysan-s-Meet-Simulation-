@@ -148,42 +148,50 @@ class Form1(Form1Template):
   def colony_selector_click(self, **event_args):
     if "Colony" not in school_list:
       school_list.append("Colony")
-      print("added")
+      self.text_4.text = school_list
     else:
       school_list.remove("Colony")
-      print("removed")
+      self.text_4.text = school_list
+  
 
   @handle("alta_loma_link", "click")
   def alta_loma_link_click(self, **event_args):
     if "Alta Loma" not in school_list:
       school_list.append("Alta Loma")
+      self.text_4.text = school_list
+
     else:
       school_list.remove("Alta Loma")
+      self.text_4.text = school_list
 
   @handle("los_altos_link", "click")
   def los_altos_link_click(self, **event_args):
     if "Los Altos" not in school_list:
-      print("Lost Altos")
       school_list.append("Los Altos")
+      self.text_4.text = school_list
     else:
       school_list.remove("Los Altos")
+      self.text_4.text = school_list
 
   @handle("san_dimas_link", "click")
   def san_dimas_link_click(self, **event_args):
     if "San Dimas" not in school_list:
-      print("San Dimas")
       school_list.append("San Dimas")
+      self.text_4.text = school_list
+      
     else:
       school_list.remove("San Dimas")
+      self.text_4.text = school_list
 
   @handle("south_hills_list", "click")
   def south_hills_link_click(self, **event_args):
     if "South Hills" not in school_list:
       school_list.append("South Hills")
-      print("South hills")
+      self.text_4.text = school_list
 
     else:
       school_list.remove("South Hills")
+      self.text_4.text = school_list
 
   @handle("icon_button_1", "click")
   def icon_button_1_click(self, **event_args):
