@@ -21,6 +21,23 @@ pd.set_option('display.max_columns',None)
 pd.set_option('display.width',None)
 pd.set_option('display.max_rows',None)
 
+#untested
+field_events_list = ['Shot Put', 'Discus', 'High Jump', 'Pole Vault', 'Long Jump', 'Triple Jump']
+@anvil.server.callable
+def field_event(length):
+  if ("m") in length:
+    return length
+  elif ("'") in length:
+    feet,inches = length.split("'")
+    total_inches = float(feet)*12 + float(inches.replace('"',""))
+    meters = round(total_inches*0.0254,2)
+    return f"{meters}m"
+  elif ("-") in length:
+    feet,inches = length.split("-")
+    total_inches = float(feet)*12 + float(inches)
+    meters = round(total_inches*0.0254,2)
+    return f"{meters}m"
+
 def time_to_seconds(time_str):
   try:
     if float(time_str) < 60:
@@ -43,7 +60,9 @@ def import_csf_to_table():
   print("DF Located")
   for _, row in df.iterrows():
     row= {k:(None if pd.isna(v) else v) for k,v in row.items()}
-    print(row)
+    if row["Length"] in field_events_list:
+      measured_result = row["Time"]
+      row["Time"] = field_event(measured_result)
 
     app_tables.athletic_table.add_row(
       School = row["School"],Runner=row["Runner"],Race=row["Race"],Grade=row["Grade"],Gender = row['Gender'],Time=row["Time"],Date=row["Date"],Length=row["Length"],time_seconds = row["time_seconds"])

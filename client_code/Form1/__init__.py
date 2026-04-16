@@ -23,12 +23,18 @@ class Form1(Form1Template):
     self.init_components(**properties)
     if 1 == 0:
       anvil.server.call('main')
+      
+      #uni check
     if 1 == 0:
       anvil.server.call('launch_uni_check')
       ######ONLY USE ONCE ERROR TABLE HAS BEEN CHECKED
     if 1 == 0:
       anvil.server.call('add_error_table_to_correct')
+
+    ##### import athletnet csv to table
+    if 1 == 0:
       anvil.server.call('import_csv_caller')
+ 
 
 
   
@@ -106,11 +112,7 @@ class Form1(Form1Template):
     school_2_total_points = 0
     school_1, school_2 = (school_list + [None,None])[:2]
     event_list = list(filter(lambda x:x is not None,anvil.server.call("count_events")))
-    
-
-      
-    print(event_list)
-
+     
     event_list = [e for e in event_list if e not in extra_events]
 
     if self.button_1.appearance == "outlined":
@@ -124,6 +126,7 @@ class Form1(Form1Template):
     
     for event in event_list:
       empty_o_not,school_1_points,school_2_points = self.create_datagrids(event,school_list)
+      
       if empty_o_not != "empty":
         school_1_total_points = school_1_points + school_1_total_points
         school_2_total_points = school_2_points + school_2_total_points

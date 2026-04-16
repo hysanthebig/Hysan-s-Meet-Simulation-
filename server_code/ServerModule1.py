@@ -10,6 +10,7 @@ import plotly.graph_objects as go
 import numpy as np
 import time
 
+field_events_list = ['Shot Put', 'Discus', 'High Jump', 'Pole Vault', 'Long Jump', 'Triple Jump']
 print("connected server module")
 def tabler(rows):
   data_list = []
@@ -102,23 +103,7 @@ def filter(sport,sort_by,runnerlist,schoollist,gradelist,lengthlist,gender):
     return None
   
   return(df_filtered)
-#untested
-@anvil.server.callable
-def field_event(length):
-  if ("m") in length:
-    return length
-  elif ("'") in length:
-    feet,inches = length.split("'")
-    total_inches = float(feet)*12 + float(inches.replace('"',""))
-    meters = round(total_inches*0.0254,2)
-    print(meters)
-    return meters
-  elif ("-") in length:
-    feet,inches = length.split("-")
-    total_inches = float(feet)*12 + float(inches)
-    meters = round(total_inches*0.0254,2)
-    print(meters)
-    return meters
+
   
 
 @anvil.server.callable
@@ -126,12 +111,15 @@ def pr_display(sport,runnerlist,lengthlist,gradelist,schoollist,gender):
   filitered_df = filter(sport,"Runner",runnerlist,schoollist,gradelist,lengthlist,gender)
   if filitered_df is None:
     return None
-  df_pr = tabler(filitered_df)
-  df_pr = df_pr.sort_values(by = ["time_seconds"])
-  pr_df = df_pr.groupby("Runner")['time_seconds'].min().copy()
-  pr_rows = df_pr[df_pr["time_seconds"] == df_pr["Runner"].map(pr_df)]
-  pr_rows = pr_rows.drop(columns = ['time_seconds']).to_dict(orient="records")
-  return(pr_rows)
+  if lengthlist in field_events_list:
+    pass
+  else:
+    df_pr = tabler(filitered_df)
+    df_pr = df_pr.sort_values(by = ["time_seconds"])
+    pr_df = df_pr.groupby("Runner")['time_seconds'].min().copy()
+    pr_rows = df_pr[df_pr["time_seconds"] == df_pr["Runner"].map(pr_df)]
+    pr_rows = pr_rows.drop(columns = ['time_seconds']).to_dict(orient="records")
+    return(pr_rows)
 
 
 @anvil.server.callable
