@@ -108,8 +108,8 @@ def field_event(length):
   if ("m") in length:
     return length
   elif ("'") in length:
-    feet,inches = float(length.split("'").replace('"',""))
-    total_inches = float(feet)*12 + float(inches)
+    feet,inches = length.split("'")
+    total_inches = float(feet)*12 + float(inches.replace('"',""))
     meters = round(total_inches*0.0254,2)
     print(meters)
     return meters
