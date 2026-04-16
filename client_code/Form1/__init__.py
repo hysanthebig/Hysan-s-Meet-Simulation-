@@ -13,7 +13,8 @@ sprint_events =["100 Meters","200 Meters","400 Meters"]
 distance_events = ["800 Meters","1600 Meters","3200 Meters"]
 hurdle_events = ["110m Hurdles","300m Hurdles"]
 relay_events = ["4x100 Relay",'4x200 Relay', '4x400 Relay', "4x800 Relay","4x1600 Relay","SMR 800m","SMR 1600m","DMR 4000m"]
-extra_events = ['Shot Put', 'Discus', 'High Jump', 'Pole Vault', 'Long Jump', 'Triple Jump','4x200 Relay',"4x800 Relay","4x1600 Relay","SMR 800m","SMR 1600m","DMR 4000m"]
+field_events = ['Shot Put', 'Discus', 'High Jump', 'Pole Vault', 'Long Jump', 'Triple Jump']
+extra_events = ['4x200 Relay',"4x800 Relay","4x1600 Relay","SMR 800m","SMR 1600m","DMR 4000m"]
 
 
 class Form1(Form1Template):

@@ -111,14 +111,15 @@ def pr_display(sport,runnerlist,lengthlist,gradelist,schoollist,gender):
   filitered_df = filter(sport,"Runner",runnerlist,schoollist,gradelist,lengthlist,gender)
   if filitered_df is None:
     return None
+  df_pr = tabler(filitered_df)
   if lengthlist in field_events_list:
-    pass
+    field_df = df_pr.sort_values(by = ["Time"], key = lambda x:x.str.replace("m","").astype(float), Ascending = True)
+    print(field_df)
+    field_pr_rows = field_df.drop(columns = ['time_seconds']).to_dict(orient="records")
+    return(field_pr_rows)    
   else:
-    df_pr = tabler(filitered_df)
     df_pr = df_pr.sort_values(by = ["time_seconds"])
-    pr_df = df_pr.groupby("Runner")['time_seconds'].min().copy()
-    pr_rows = df_pr[df_pr["time_seconds"] == df_pr["Runner"].map(pr_df)]
-    pr_rows = pr_rows.drop(columns = ['time_seconds']).to_dict(orient="records")
+    pr_rows = df_pr.drop(columns = ['time_seconds']).to_dict(orient="records")
     return(pr_rows)
 
 
