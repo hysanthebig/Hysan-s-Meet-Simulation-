@@ -19,6 +19,7 @@ extra_events = ['Shot Put', 'Discus', 'High Jump', 'Pole Vault', 'Long Jump', 'T
 class Form1(Form1Template):
   def __init__(self, **properties):
     # Set Form properties and Data Bindings.
+    anvil.server.call('field_event','''34' 7.5"''')
     self.init_components(**properties)
     if 1 == 0:
       anvil.server.call('main')

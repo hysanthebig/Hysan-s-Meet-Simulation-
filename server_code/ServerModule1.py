@@ -102,6 +102,24 @@ def filter(sport,sort_by,runnerlist,schoollist,gradelist,lengthlist,gender):
     return None
   
   return(df_filtered)
+#untested
+@anvil.server.callable
+def field_event(length):
+  if ("m") in length:
+    return length
+  elif ("'") in length:
+    feet,inches = float(length.split("'").replace('"',""))
+    total_inches = float(feet)*12 + float(inches)
+    meters = round(total_inches*0.0254,2)
+    print(meters)
+    return meters
+  elif ("-") in length:
+    feet,inches = length.split("-")
+    total_inches = float(feet)*12 + float(inches)
+    meters = round(total_inches*0.0254,2)
+    print(meters)
+    return meters
+  
 
 @anvil.server.callable
 def pr_display(sport,runnerlist,lengthlist,gradelist,schoollist,gender):
@@ -121,4 +139,4 @@ def count_events():
   events = list(dict.fromkeys([r['Length'] for r in app_tables.athletic_table.search()]))
   return events
   
-  
+
