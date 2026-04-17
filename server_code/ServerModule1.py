@@ -113,8 +113,9 @@ def pr_display(sport,runnerlist,lengthlist,gradelist,schoollist,gender):
     return None
   df_pr = tabler(filitered_df)
   if lengthlist in field_events_list:
-    field_df = df_pr.sort_values(by = ["Time"], key = lambda x:x.str.replace("m","").astype(float), Ascending = True)
-    print(field_df)
+    print(df_pr["Time"].head(1))
+    print((df_pr["Time"].str.replace("m","").str.strip()).head(1))
+    field_df = df_pr.sort_values(by = ["Time"], key = lambda x:x.str.replace("m","").str.strip().astype(float), ascending = True)
     field_pr_rows = field_df.drop(columns = ['time_seconds']).to_dict(orient="records")
     return(field_pr_rows)    
   else:
