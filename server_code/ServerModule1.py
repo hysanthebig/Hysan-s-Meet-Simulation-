@@ -93,7 +93,6 @@ def filter(sport,sort_by,runnerlist,schoollist,gradelist,lengthlist,gender):
   df_filtered = df.loc[readmask]
   df_filtered = df_filtered.sort_values(by=[sort_by])
   df_filtered =df_filtered.to_dict(orient="records")
-  print(df_filtered)
   
   
   end = time.time()
@@ -112,10 +111,10 @@ def pr_display(sport,runnerlist,lengthlist,gradelist,schoollist,gender):
   if filitered_df is None:
     return None
   df_pr = tabler(filitered_df)
-  if lengthlist in field_events_list:
-    print(df_pr["Time"].head(1))
-    print((df_pr["Time"].str.replace("m","").str.strip()).head(1))
-    field_df = df_pr.sort_values(by = ["Time"], key = lambda x:x.str.replace("m","").str.strip().astype(float), ascending = True)
+  length = lengthlist[0]
+
+  if length in field_events_list:
+    field_df = df_pr.sort_values(by = ["Time"], key = lambda x:x.str.replace("m","").str.strip().astype(float), ascending = False)
     field_pr_rows = field_df.drop(columns = ['time_seconds']).to_dict(orient="records")
     return(field_pr_rows)    
   else:

@@ -102,6 +102,7 @@ class Form1(Form1Template):
           school_2_points = school_2_points + row["Points"]
 
 
+
       
     grid.add_component(rp)
     return("",school_1_points,school_2_points)
