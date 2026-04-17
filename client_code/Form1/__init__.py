@@ -14,6 +14,8 @@ distance_events = ["800 Meters","1600 Meters","3200 Meters"]
 hurdle_events = ["110m Hurdles","300m Hurdles"]
 relay_events = ["4x100 Relay",'4x200 Relay', '4x400 Relay', "4x800 Relay","4x1600 Relay","SMR 800m","SMR 1600m","DMR 4000m"]
 field_events = ['Shot Put', 'Discus', 'High Jump', 'Pole Vault', 'Long Jump', 'Triple Jump']
+throwing_events = ['Shot Put', 'Discus','Pole Vault']
+jumping_events = ['High Jump','Long Jump', 'Triple Jump']
 extra_events = ['4x200 Relay',"4x800 Relay","4x1600 Relay","SMR 800m","SMR 1600m","DMR 4000m"]
 
 
@@ -76,7 +78,7 @@ class Form1(Form1Template):
     data = anvil.server.call("pr_display","Track",[],[event],[],schools,gender)
     if data is None:
       grid.remove_from_parent()
-      return "empty",0,0
+      return "empty",None
     
     rp.items = [
       {
@@ -117,6 +119,10 @@ class Form1(Form1Template):
       event_list = [e for e in event_list if e not in hurdle_events]
     if self.button_4.appearance == "outlined":
       event_list = [e for e in event_list if e not in distance_events]
+    if self.button_5.appearance == "outlined":
+      event_list = [e for e in event_list if e not in throwing_events]
+    if self.button_6.appearance == "outlined":
+      event_list = [e for e in event_list if e not in jumping_events]
     
     for event in event_list:
       empty_o_not,school_points_dict = self.create_datagrids(event,school_list)
@@ -228,6 +234,21 @@ class Form1(Form1Template):
     else:
       self.button_4.appearance = "filled"
 
+  @handle("button_5", "click")
+  def button_5_click(self, **event_args):
+    if self.button_5.appearance == "filled":
+      self.button_5.appearance = "outlined"
+    else:
+      self.button_5.appearance = "filled"
+
+  @handle("button_6", "click")
+  def button_6_click(self, **event_args):
+    if self.button_6.appearance == "filled":
+      self.button_6.appearance = "outlined"
+    else:
+      self.button_6.appearance = "filled"
+
+  
 
 
 
