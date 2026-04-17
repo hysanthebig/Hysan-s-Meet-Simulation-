@@ -59,12 +59,10 @@ class Form1(Form1Template):
 
 
   def create_datagrids(self,event,schools):
-    school_1, school_2 = (schools + [None,None])[:2]
     gender = self.dropdown_menu_1.selected_value
     if gender is None:
       gender = "Male"
-    school_1_points = 0
-    school_2_points = 0
+    school_points = {School:0 for School in schools}
     grid = DataGrid()
     self.column_panel_1.add_component(grid)
     grid.columns = [{"id":"A","title": event,"data_key":"Rank"},
@@ -88,31 +86,25 @@ class Form1(Form1Template):
       }
       for i, row in enumerate(data)
     ]
-    if event not in relay_events:
-      for row in rp.items[:3]:
-        if school_1 == row["School"]:
-          school_1_points = school_1_points + row["Points"]
-        elif school_2 == row["School"]:
-          school_2_points = school_2_points + row["Points"]
-    else:
-      for row in rp.items[:1]:
-        if school_1 == row["School"]:
-          school_1_points = school_1_points + row["Points"]
-        elif school_2 == row["School"]:
-          school_2_points = school_2_points + row["Points"]
+
+    score_limit = 1 if event in relay_events else 3
+
+    for row in rp.items[:score_limit]:
+      school = row["School"]
+      if school in school_points:
+        school_points[school] += row["Points"]
+
 
 
 
       
     grid.add_component(rp)
-    return("",school_1_points,school_2_points)
+    return("",school_points)
 
 
   def add_tables(self):
     self.text_3.text =''
-    school_1_total_points = 0
-    school_2_total_points = 0
-    school_1, school_2 = (school_list + [None,None])[:2]
+    total_points = {}
     event_list = list(filter(lambda x:x is not None,anvil.server.call("count_events")))
      
     event_list = [e for e in event_list if e not in extra_events]
@@ -127,22 +119,26 @@ class Form1(Form1Template):
       event_list = [e for e in event_list if e not in distance_events]
     
     for event in event_list:
-      empty_o_not,school_1_points,school_2_points = self.create_datagrids(event,school_list)
+      empty_o_not,school_points_dict = self.create_datagrids(event,school_list)
       
       if empty_o_not != "empty":
-        school_1_total_points = school_1_points + school_1_total_points
-        school_2_total_points = school_2_points + school_2_total_points
+        event_text_list = []
+        for school,points in school_points_dict.items():
+          total_points[school] = total_points.get(school,0) + points
+          event_text_list += (f"-----{school} {points} \n")
+        self.text_3.text += (f"{event} -\n {(''.join(event_text_list))}")
           
-        self.text_3.text += (f"{event} - {school_1}-{school_1_points}, {school_2}-{school_2_points} \n")
+    
         
 
 
-      if school_1_total_points < school_2_total_points:
-        winning_school = school_2
-      else:
-        winning_school = school_1
+      winning_school = max(total_points, key=total_points.get)
       self.rich_text_1.content = (f"{winning_school} is winning.")
-      self.text_2.text = (f"{school_1} has {school_1_total_points} points. \n {school_2} has {school_2_total_points} Points")
+
+      text_list = []
+      for school,tpoints in total_points.items():
+        text_list += (f"{school} has {tpoints} points. \n")
+      self.text_2.text = ("".join(text_list))
       
       
 
