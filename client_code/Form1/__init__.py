@@ -26,7 +26,7 @@ class Form1(Form1Template):
     self.init_components(**properties)
     if 1 == 0:
       anvil.server.call('main')
-      
+
       #uni check
     if 1 == 0:
       anvil.server.call('launch_uni_check')
@@ -37,11 +37,11 @@ class Form1(Form1Template):
     ##### import athletnet csv to table
     if 1 == 0:
       anvil.server.call('import_csv_caller')
- 
 
 
-  
-    
+
+
+
 
 
 
@@ -54,52 +54,57 @@ class Form1(Form1Template):
     # Any code you write here will run before the form opens.
 
 
-  
 
 
 
 
 
-  def create_datagrids(self,event,schools):
+
+  def create_datagrids(self,event_list,schools):
     gender = self.dropdown_menu_1.selected_value
     if gender is None:
       gender = "Male"
-    school_points = {School:0 for School in schools}
-    grid = DataGrid()
-    self.column_panel_1.add_component(grid)
-    grid.columns = [{"id":"A","title": event,"data_key":"Rank"},
-                    {"id":"B","title":"School","data_key":"School"},
-                    {"id":"C","title":"Runner","data_key":"Runner"},
-                    {"id":"D","title":"Grade","data_key":"Grade"},
-                    {"id":"E","title":"Length","data_key":"Length"},
-                    {"id":"F","title":"Time","data_key":"Time"},
-                    {"id":"G","title":"Points","data_key":"Points"}]
-    rp = RepeatingPanel(item_template=DataRowPanel)
-    data = anvil.server.call("pr_display","Track",[],[event],[],schools,gender)
-    if data is None:
-      grid.remove_from_parent()
-      return "empty",None
-    
-    rp.items = [
-      {
-        **row,
-        "Rank": i + 1,
-        "Points": 5 if i == 0 else 3 if i == 1 else 1 if i == 2 else 0
-      }
-      for i, row in enumerate(data)
-    ]
 
-    score_limit = 1 if event in relay_events else 3
+    dict = anvil.server.call("call_pr_display",schools,event_list,gender)
 
-    for row in rp.items[:score_limit]:
-      school = row["School"]
-      if school in school_points:
-        school_points[school] += row["Points"]
+    for event,df in dict.items():
+      print(event)
+      print(df)
+      school_points = {School:0 for School in schools}
+      grid = DataGrid()
+      self.column_panel_1.add_component(grid)
+      grid.columns = [{"id":"A","title": event,"data_key":"Rank"},
+                      {"id":"B","title":"School","data_key":"School"},
+                      {"id":"C","title":"Runner","data_key":"Runner"},
+                      {"id":"D","title":"Grade","data_key":"Grade"},
+                      {"id":"E","title":"Length","data_key":"Length"},
+                      {"id":"F","title":"Time","data_key":"Time"},
+                      {"id":"G","title":"Points","data_key":"Points"}]
+      rp = RepeatingPanel(item_template=DataRowPanel)
+      if not df:
+        grid.remove_from_parent()
+        pass
+
+      rp.items = [
+        {
+          **row,
+          "Rank": i + 1,
+          "Points": 5 if i == 0 else 3 if i == 1 else 1 if i == 2 else 0
+        }
+        for i, row in enumerate(df)
+      ]
+
+      score_limit = 1 if event in relay_events else 3
+
+      for row in rp.items[:score_limit]:
+        school = row["School"]
+        if school in school_points:
+          school_points[school] += row["Points"]
 
 
 
 
-      
+
     grid.add_component(rp)
     return("",school_points)
 
@@ -108,11 +113,11 @@ class Form1(Form1Template):
     self.text_3.text =''
     total_points = {}
     event_list = list(filter(lambda x:x is not None,anvil.server.call("count_events")))
-     
+
     event_list = [e for e in event_list if e not in extra_events]
 
     if self.button_1.appearance == "outlined":
-        event_list = [e for e in event_list if e not in sprint_events]
+      event_list = [e for e in event_list if e not in sprint_events]
     if self.button_2.appearance == "outlined":
       event_list = [e for e in event_list if e not in relay_events] 
     if self.button_3.appearance == "outlined":
@@ -123,19 +128,18 @@ class Form1(Form1Template):
       event_list = [e for e in event_list if e not in throwing_events]
     if self.button_6.appearance == "outlined":
       event_list = [e for e in event_list if e not in jumping_events]
-    
-    for event in event_list:
-      empty_o_not,school_points_dict = self.create_datagrids(event,school_list)
-      
-      if empty_o_not != "empty":
-        event_text_list = []
-        for school,points in school_points_dict.items():
+
+    empty_o_not,school_points_dict = self.create_datagrids(event_list,school_list)
+
+    if empty_o_not != "empty":
+      event_text_list = []
+      for school,points in school_points_dict.items():
           total_points[school] = total_points.get(school,0) + points
           event_text_list += (f"-----{school} {points} \n")
-        self.text_3.text += (f"{event} -\n {(''.join(event_text_list))}")
-          
-    
-        
+      self.text_3.text += (f"{event} -\n {(''.join(event_text_list))}")
+
+
+
 
 
       winning_school = max(total_points, key=total_points.get)
@@ -145,8 +149,8 @@ class Form1(Form1Template):
       for school,tpoints in total_points.items():
         text_list += (f"{school} has {tpoints} points. \n")
       self.text_2.text = ("".join(text_list))
-      
-      
+
+
 
 
 
@@ -160,7 +164,7 @@ class Form1(Form1Template):
     else:
       school_list.remove("Colony")
       self.text_4.text = school_list
-  
+
 
   @handle("alta_loma_link", "click")
   def alta_loma_link_click(self, **event_args):
@@ -186,7 +190,7 @@ class Form1(Form1Template):
     if "San Dimas" not in school_list:
       school_list.append("San Dimas")
       self.text_4.text = school_list
-      
+
     else:
       school_list.remove("San Dimas")
       self.text_4.text = school_list
@@ -248,7 +252,7 @@ class Form1(Form1Template):
     else:
       self.button_6.appearance = "filled"
 
-  
+
 
 
 

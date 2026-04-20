@@ -56,29 +56,20 @@ def time_to_seconds(time):
 
 
 @anvil.server.callable
-def filter(sport,sort_by,runnerlist,schoollist,gradelist,lengthlist,gender):
+def filter(df,sort_by,schoollist,lengthlist,gender):
   start = time.time()
-  df = table_into_df(sport)
   print(gender)
   
   readmask = pd.Series(True, index=df.index)
-  runner_mask = pd.Series(False, index=df.index)
   school_mask = pd.Series(False, index=df.index)
-  grade_mask = pd.Series(False, index = df.index)
   length_mask = pd.Series(False,index = df.index)
   gender_mask = pd.Series(False,index = df.index)
     ####################Filter#######################
-  runner_mask = df["Runner"].str.lower().isin([r.lower() for r in runnerlist])
-  if len(runnerlist) == 0:
-    runner_mask = pd.Series(True,index =df.index)
-  
+
   school_mask = df['School'].str.lower().isin([r.lower() for r in schoollist])
   if len(schoollist) == 0:
     school_mask = pd.Series(True,index =df.index)
   
-  grade_mask = df['Grade'].astype(str).isin([r.lower() for r in gradelist])
-  if len(gradelist) == 0:
-    grade_mask = pd.Series(True,index =df.index)
   
   length_mask = df['Length'].str.lower().isin([r.lower() for r in lengthlist])
   if len(lengthlist) == 0:
@@ -88,30 +79,29 @@ def filter(sport,sort_by,runnerlist,schoollist,gradelist,lengthlist,gender):
 
 
   
-  readmask = readmask & runner_mask & school_mask & grade_mask & length_mask & gender_mask
+  readmask = readmask & school_mask & length_mask & gender_mask
   
   df_filtered = df.loc[readmask]
   df_filtered = df_filtered.sort_values(by=[sort_by])
-  df_filtered =df_filtered.to_dict(orient="records")
   
   
   end = time.time()
   print(f"filter {end-start:.4f}")
 
-  if not df_filtered:
-    return None
+
   
   return(df_filtered)
 
   
 
-@anvil.server.callable
-def pr_display(sport,runnerlist,lengthlist,gradelist,schoollist,gender):
-  filitered_df = filter(sport,"Runner",runnerlist,schoollist,gradelist,lengthlist,gender)
-  if filitered_df is None:
+def pr_display(df,lengthlist,schoollist,gender):
+  
+  df_pr = filter(df,"Runner",schoollist,lengthlist,gender)
+  if df_pr is None:
     return None
-  df_pr = tabler(filitered_df)
   length = lengthlist[0]
+
+  
 
   if length in field_events_list:
     field_df = df_pr.sort_values(by = ["Time"], key = lambda x:x.str.replace("m","").str.strip().astype(float), ascending = False)
@@ -122,7 +112,14 @@ def pr_display(sport,runnerlist,lengthlist,gradelist,schoollist,gender):
     pr_rows = df_pr.drop(columns = ['time_seconds']).to_dict(orient="records")
     return(pr_rows)
 
+@anvil.server.callable
+def call_pr_display(school_list,event_list,gender):
+  df = table_into_df("Track")
+  dfs = {event:filter(df,"Runner",school_list,[event],gender) for event in event_list}
+  finished_df_dict = {event:pr_display(dfs[event],[event],school_list,gender) for event in event_list}
+  return finished_df_dict
 
+  
 @anvil.server.callable
 def count_events():
   events = list(dict.fromkeys([r['Length'] for r in app_tables.athletic_table.search()]))
