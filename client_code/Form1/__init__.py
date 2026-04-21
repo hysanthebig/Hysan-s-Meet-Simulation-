@@ -70,6 +70,7 @@ class Form1(Form1Template):
     event_points = {}         
     for event in event_list:
       df = dict[event]
+      print(df)
       school_points = {School:0 for School in schools}
       grid = DataGrid()
       self.column_panel_1.add_component(grid)
@@ -152,7 +153,9 @@ class Form1(Form1Template):
       self.text_2.text = ("".join(text_list))
 
 
-
+  def new_time_input():
+    pass
+    
 
 
     ############################################# ui under here
@@ -252,11 +255,6 @@ class Form1(Form1Template):
       self.button_6.appearance = "outlined"
     else:
       self.button_6.appearance = "filled"
-
-def new_time_input()
-
-
-
 
 
 

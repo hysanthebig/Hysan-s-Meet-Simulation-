@@ -18,5 +18,6 @@ class RowTemplate2(RowTemplate2Template):
     # Any code you write here will run before the form opens.
 
   def time_box_enter(self, **event_args):
+    print(self.item["Time"])
     
 
