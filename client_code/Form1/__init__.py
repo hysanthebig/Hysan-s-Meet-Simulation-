@@ -253,7 +253,7 @@ class Form1(Form1Template):
     else:
       self.button_6.appearance = "filled"
 
-def new_time_inp
+def new_time_input()
 
 
 
