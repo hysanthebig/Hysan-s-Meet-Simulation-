@@ -11,5 +11,6 @@ class RowTemplate3(RowTemplate3Template):
   def __init__(self, **properties):
     # Set Form properties and Data Bindings.
     self.init_components(**properties)
+    self.text_box_time.text = self.item["Time"]
 
     # Any code you write here will run before the form opens.
