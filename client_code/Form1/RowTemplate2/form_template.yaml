@@ -1,0 +1,7 @@
+components:
+- layout_properties: {column: NRRRRS}
+  name: time_box
+  properties: {}
+  type: form:dep_lin1x4oec0ytd:_Components.TextInput.TextBox
+container: {type: DataRowPanel}
+is_package: true

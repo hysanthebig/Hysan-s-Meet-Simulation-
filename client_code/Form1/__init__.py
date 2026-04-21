@@ -1,4 +1,5 @@
 from ._anvil_designer import Form1Template
+from .RowTemplate2 import RowTemplate2
 from anvil import *
 import anvil.tables as tables
 import anvil.tables.query as q
@@ -77,14 +78,15 @@ class Form1(Form1Template):
                       {"id":"C","title":"Runner","data_key":"Runner"},
                       {"id":"D","title":"Grade","data_key":"Grade"},
                       {"id":"E","title":"Length","data_key":"Length"},
-                      {"id":"F","title":"Time","data_key":"Time"},
+                      {"id":"F","title":"Time","data_key": None },
                       {"id":"G","title":"Points","data_key":"Points"}]
-      rp = RepeatingPanel(item_template=DataRowPanel)
+      rp = RepeatingPanel(item_template=RowTemplate2)
       if not df:
         grid.remove_from_parent()
         pass
 
       rp.items = [
+
         {
           **row,
           "Rank": i + 1,
