@@ -1,15 +1,8 @@
 components:
-- layout_properties: {column: NRRRRS}
+- event_bindings: {}
+  layout_properties: {column: F}
   name: time_box
-  properties: {}
+  properties: {appearance: filled, leading_icon: '', trailing_icon: ''}
   type: form:dep_lin1x4oec0ytd:_Components.TextInput.TextBox
-- layout_properties: {column: EBBHGZ}
-  name: text_rank
-  properties: {}
-  type: form:dep_lin1x4oec0ytd:_Components.Text
-- layout_properties: {column: MXZVXR}
-  name: text_rank_2
-  properties: {}
-  type: form:dep_lin1x4oec0ytd:_Components.Text
 container: {type: DataRowPanel}
 is_package: true
