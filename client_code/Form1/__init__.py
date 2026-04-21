@@ -78,7 +78,7 @@ class Form1(Form1Template):
                       {"id":"C","title":"Runner","data_key":"Runner"},
                       {"id":"D","title":"Grade","data_key":"Grade"},
                       {"id":"E","title":"Length","data_key":"Length"},
-                      {"id":"F","title":"Time","data_key": None },
+                      {"id":"F","title":"Time","data_key": self.item["Time"] },
                       {"id":"G","title":"Points","data_key":"Points"}]
       rp = RepeatingPanel(item_template=RowTemplate2)
       if not df:
