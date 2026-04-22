@@ -14,11 +14,11 @@ components_by_slot:
     properties:
       columns:
       - {data_key: Rank, id: EBBHGZ, title: Event}
-      - {data_key: School, expand: false, id: MXZVXR, title: School, width: 78.38885498046875}
+      - {data_key: School, expand: false, id: MXZVXR, title: School, width: 80.3751220703125}
       - {data_key: Runner, id: FBVNNS, title: Runner}
       - {data_key: Grade, expand: false, id: PMTQHI, title: Grade, width: 48.90447998046875}
       - {data_key: Length, expand: false, id: QAJMWO, title: Length, width: 49.921142578125}
-      - {data_key: Time, expand: false, id: NRRRRS, title: Time, width: 48.30645751953125}
+      - {data_key: Time, expand: false, id: NRRRRS, title: Time, width: 88.7852783203125}
       - {data_key: Points, id: LOEPPQ, title: Points}
     type: DataGrid
   navigation:
