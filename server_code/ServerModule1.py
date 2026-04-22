@@ -128,7 +128,6 @@ def count_events():
 def re_sort(dictionary):
   df = tabler(dictionary)
   length = df["Length"].iloc(0)
-  print(df)
 
 
 
@@ -138,6 +137,7 @@ def re_sort(dictionary):
     return(field_pr_rows)    
   else:
     df_pr = df.sort_values(by = ["time_seconds"])
+    print(df)
     pr_rows = df_pr.to_dict(orient="records")
     return(pr_rows)
   

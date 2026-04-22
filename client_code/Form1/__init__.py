@@ -198,6 +198,8 @@ class Form1(Form1Template):
 
     grid.add_component(rp)
 
+    self.event_panels[event] = rp
+
     score_limit = 1 if event in relay_events else 3
 
 

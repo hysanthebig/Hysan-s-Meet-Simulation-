@@ -21,7 +21,7 @@ class RowTemplate2(RowTemplate2Template):
 
     self.item["Time"] = self.time_box.text
     get_open_form().update_row(self.item)
-    print("hi")
+  
 
 
     
