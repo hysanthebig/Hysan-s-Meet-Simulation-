@@ -20,4 +20,5 @@ class RowTemplate2(RowTemplate2Template):
 
   def time_box_enter(self, **event_args):
     get_open_form().update_row(self.item)
+    print(self.item)
     

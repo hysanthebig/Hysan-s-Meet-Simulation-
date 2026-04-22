@@ -165,6 +165,7 @@ class Form1(Form1Template):
     panel.remove_from_parent()
     print(self.dict_data)
     df = self.dict_data[event]
+    print(updated_row)
     
     rp = RepeatingPanel(item_template=RowTemplate2)
     
@@ -187,15 +188,7 @@ class Form1(Form1Template):
 
     score_limit = 1 if event in relay_events else 3
 
-    for row in rp.items[:score_limit]:
-      school = row["School"]
-      if school in school_points:
-        school_points[school] += row["Points"]
 
-      
-   
-      event_points[event] = school_points
-    
     
 
 
