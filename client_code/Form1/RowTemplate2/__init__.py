@@ -9,7 +9,6 @@ from anvil.tables import app_tables
 
 class RowTemplate2(RowTemplate2Template):
   def __init__(self, **properties):
-    print("ROW INIT")
     # Set Form properties and Data Bindings.
     self.init_components(**properties)
     self.time_box.text = self.item['Time']
@@ -19,6 +18,7 @@ class RowTemplate2(RowTemplate2Template):
     # Any code you write here will run before the form opens.
 
   def time_box_enter(self, **event_args):
+    print(self.item["Length"])
     get_open_form().update_row(self.item)
     print(self.item)
     
