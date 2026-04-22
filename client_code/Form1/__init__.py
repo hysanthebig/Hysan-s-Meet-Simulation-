@@ -56,12 +56,15 @@ class Form1(Form1Template):
     # Any code you write here will run before the form opens.
 
 
-def time_to_seconds(time):
-  mintunes, seconds = time.split(":")
-  mintunes = int(mintunes)
-  seconds = float(seconds)
-  time_seconds = mintunes*60 + seconds
-  return time_seconds
+  def time_to_seconds(self,timea):
+    if ":" in timea:
+      mintunes, seconds = timea.split(":")
+      mintunes = int(mintunes)
+      seconds = float(seconds)
+      time_seconds = mintunes*60 + seconds
+    else:
+      time_seconds = float(timea)
+    return time_seconds
 
 
 
@@ -170,18 +173,18 @@ def time_to_seconds(time):
     panel = self.event_panels[event]
     panel.remove_from_parent()
     if updated_row["Length"] not in field_events:
-      updated_row["time_seconds"] = time_to_seconds(updated_row["Time"])
+      updated_row["time_seconds"] = self.time_to_seconds(updated_row["Time"])
     df = self.dict_data[event]
 
-    
 
-    
     rp = RepeatingPanel(item_template=RowTemplate2)
     
     for row in df:
       if row["Runner"] == updated_row["Runner"] and row["School"] == updated_row["School"]:
         row["Time"] = updated_row["Time"]
         row["time_seconds"] = updated_row["time_seconds"]
+
+    new_df = anvil.server.call("re_sort",df)    
   
     rp.items = [
 
@@ -190,7 +193,7 @@ def time_to_seconds(time):
             "Rank": i + 1,
             "Points": 5 if i == 0 else 3 if i == 1 else 1 if i == 2 else 0
           }
-          for i, row in enumerate(df)
+          for i, row in enumerate(new_df)
         ]
 
     grid.add_component(rp)

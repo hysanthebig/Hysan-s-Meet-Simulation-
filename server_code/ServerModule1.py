@@ -127,15 +127,16 @@ def count_events():
 @anvil.server.callable
 def re_sort(dictionary):
   df = tabler(dictionary)
-  length = df["Length"]
+  length = df["Length"].iloc(0)
+
 
 
   if length in field_events_list:
     field_df = df.sort_values(by = ["Time"], key = lambda x:x.str.replace("m","").str.strip().astype(float), ascending = False)
-    field_pr_rows = field_df.drop(columns = ['time_seconds']).to_dict(orient="records")
+    field_pr_rows = field_df.to_dict(orient="records")
     return(field_pr_rows)    
   else:
     df_pr = df.sort_values(by = ["time_seconds"])
-    pr_rows = df_pr.drop(columns = ['time_seconds']).to_dict(orient="records")
+    pr_rows = df_pr.to_dict(orient="records")
     return(pr_rows)
   
