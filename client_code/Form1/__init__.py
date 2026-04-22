@@ -56,6 +56,12 @@ class Form1(Form1Template):
     # Any code you write here will run before the form opens.
 
 
+def time_to_seconds(time):
+  mintunes, seconds = time.split(":")
+  mintunes = int(mintunes)
+  seconds = float(seconds)
+  time_seconds = mintunes*60 + seconds
+  return time_seconds
 
 
 
@@ -163,16 +169,20 @@ class Form1(Form1Template):
     grid = self.event_grids[event]
     panel = self.event_panels[event]
     panel.remove_from_parent()
+    if updated_row["Length"] not in field_events:
+      updated_row["time_seconds"] = time_to_seconds(updated_row["Time"])
     df = self.dict_data[event]
+
+    
 
     
     rp = RepeatingPanel(item_template=RowTemplate2)
     
     for row in df:
       if row["Runner"] == updated_row["Runner"] and row["School"] == updated_row["School"]:
-        print(row)
-        print(updated_row)
         row["Time"] = updated_row["Time"]
+        row["time_seconds"] = updated_row["time_seconds"]
+  
     rp.items = [
 
           {
