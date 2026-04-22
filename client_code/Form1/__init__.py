@@ -20,8 +20,9 @@ extra_events = ['4x200 Relay',"4x800 Relay","4x1600 Relay","SMR 800m","SMR 1600m
 
 
 class Form1(Form1Template):
+  
+  
   def __init__(self, **properties):
-    
     # Set Form properties and Data Bindings.
     anvil.server.call('field_event','''34' 7.5"''')
     self.init_components(**properties)
@@ -66,13 +67,13 @@ class Form1(Form1Template):
     if gender is None:
       gender = "Male"
 
-    dict = anvil.server.call("call_pr_display",schools,event_list,gender)
+    self.dict_data = anvil.server.call("call_pr_display",schools,event_list,gender)
 
     event_points = {}
     self.event_grids = {}
     self.event_panels = {}
     for event in event_list:
-      df = dict[event]
+      df = self.dict_data[event]
       school_points = {School:0 for School in schools}
       grid = DataGrid()
       self.event_grids[event] = grid
@@ -159,10 +160,18 @@ class Form1(Form1Template):
 
   def update_row(self,updated_row,**event_args):
     event = updated_row["Length"]
+    grid = self.event_grids[event]
     panel = self.event_panels[event]
-    df = dict[event]
+    panel.remove_from_parent()
+    print(self.dict_data)
+    df = self.dict_data[event]
+    
+    rp = RepeatingPanel(item_template=RowTemplate2)
+    
     for row in df:
       if row["Runner"] == updated_row["Runner"] and row["Time"] == updated_row["School"]:
+        print(row)
+        print
         row["Time"] = updated_row["Time"]
     rp.items = [
 
@@ -174,15 +183,17 @@ class Form1(Form1Template):
           for i, row in enumerate(df)
         ]
 
+    grid.add_component(rp)
+
     score_limit = 1 if event in relay_events else 3
 
     for row in rp.items[:score_limit]:
       school = row["School"]
-        if school in school_points:
-          school_points[school] += row["Points"]
+      if school in school_points:
+        school_points[school] += row["Points"]
 
-      grid.add_component(rp)
-      self.event_panels[event] = rp
+      
+   
       event_points[event] = school_points
     
     
