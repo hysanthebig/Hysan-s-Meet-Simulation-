@@ -19,5 +19,5 @@ class RowTemplate2(RowTemplate2Template):
     # Any code you write here will run before the form opens.
 
   def time_box_enter(self, **event_args):
-    self.raise_event("x-updaterow", row=self.item)
+    get_open_form().update_row(self.item)
     

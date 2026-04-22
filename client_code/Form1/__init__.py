@@ -21,7 +21,7 @@ extra_events = ['4x200 Relay',"4x800 Relay","4x1600 Relay","SMR 800m","SMR 1600m
 
 class Form1(Form1Template):
   def __init__(self, **properties):
-    self.set_event_handler("x-updaterow", self.update_row)
+    
     # Set Form properties and Data Bindings.
     anvil.server.call('field_event','''34' 7.5"''')
     self.init_components(**properties)
@@ -70,6 +70,7 @@ class Form1(Form1Template):
 
     event_points = {}
     self.event_grids = {}
+    self.event_panels = {}
     for event in event_list:
       df = dict[event]
       school_points = {School:0 for School in schools}
@@ -106,6 +107,7 @@ class Form1(Form1Template):
           school_points[school] += row["Points"]
           
       grid.add_component(rp)
+      self.event_panels[event] = rp
       event_points[event] = school_points
     return("",event_points)
 
@@ -154,13 +156,35 @@ class Form1(Form1Template):
         text_list += (f"{school} has {tpoints} points. \n")
       self.text_2.text = ("".join(text_list))
 
-  @handle("self","x-updaterow")
+
   def update_row(self,updated_row,**event_args):
-    print("hi")
-    print(updated_row)
     event = updated_row["Length"]
-    grid = self.event_grids[event]
-    grid.remove_from_parent()
+    panel = self.event_panels[event]
+    df = dict[event]
+    for row in df:
+      if row["Runner"] == updated_row["Runner"] and row["Time"] == updated_row["School"]:
+        row["Time"] = updated_row["Time"]
+    rp.items = [
+
+          {
+            **row,
+            "Rank": i + 1,
+            "Points": 5 if i == 0 else 3 if i == 1 else 1 if i == 2 else 0
+          }
+          for i, row in enumerate(df)
+        ]
+
+    score_limit = 1 if event in relay_events else 3
+
+    for row in rp.items[:score_limit]:
+      school = row["School"]
+        if school in school_points:
+          school_points[school] += row["Points"]
+
+      grid.add_component(rp)
+      self.event_panels[event] = rp
+      event_points[event] = school_points
+    
     
 
 
