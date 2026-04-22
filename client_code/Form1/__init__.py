@@ -163,14 +163,13 @@ class Form1(Form1Template):
     grid = self.event_grids[event]
     panel = self.event_panels[event]
     panel.remove_from_parent()
-    print(self.dict_data)
     df = self.dict_data[event]
-    print(updated_row)
+
     
     rp = RepeatingPanel(item_template=RowTemplate2)
     
     for row in df:
-      if row["Runner"] == updated_row["Runner"] and row["Time"] == updated_row["School"]:
+      if row["Runner"] == updated_row["Runner"] and row["School"] == updated_row["School"]:
         print(row)
         print(updated_row)
         row["Time"] = updated_row["Time"]

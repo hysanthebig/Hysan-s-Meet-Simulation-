@@ -95,7 +95,6 @@ def filter(df,sort_by,schoollist,lengthlist,gender):
   
 
 def pr_display(df,lengthlist,schoollist,gender):
-  
   df_pr = filter(df,"Runner",schoollist,lengthlist,gender)
   if df_pr is None:
     return None
@@ -125,4 +124,5 @@ def count_events():
   events = list(dict.fromkeys([r['Length'] for r in app_tables.athletic_table.search()]))
   return events
   
-
+@anvil.server.callable
+def re_sort()
