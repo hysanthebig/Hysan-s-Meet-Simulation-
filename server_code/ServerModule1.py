@@ -128,6 +128,7 @@ def count_events():
 def re_sort(dictionary):
   df = tabler(dictionary)
   length = df["Length"].iloc(0)
+  print(df)
 
 
 
