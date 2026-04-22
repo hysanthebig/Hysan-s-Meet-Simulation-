@@ -171,7 +171,7 @@ class Form1(Form1Template):
     for row in df:
       if row["Runner"] == updated_row["Runner"] and row["Time"] == updated_row["School"]:
         print(row)
-        print
+        print(updated_row)
         row["Time"] = updated_row["Time"]
     rp.items = [
 
