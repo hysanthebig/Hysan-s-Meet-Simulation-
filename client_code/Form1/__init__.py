@@ -68,8 +68,39 @@ class Form1(Form1Template):
 
 
 
+  
+  def count_points(self):
+    self.text_3.text = ''
+    event_points = {}
+    total_points = {}
+    for event,panel in self.event_panels.items():
+      school_points = {School:0 for School in school_list}
+      
+      for row in panel.items[:3]:
+        school = row["School"]
+        if school in school_points:
+          school_points[school] += row["Points"]
+        event_points[event] = school_points
+        
+    for event,tallies in event_points.items():
+      event_text_list = []
+      for school,points in tallies.items():
+        total_points[school] = total_points.get(school,0) + points
+        event_text_list += (f"-----{school} {points} \n")
+      self.text_3.text += (f"{event} -\n {(''.join(event_text_list))}")  
+        
+    winning_school = max(total_points, key=total_points.get)
+    self.rich_text_1.content = (f"{winning_school} wins.")
+
+    text_list = []
+    for school,tpoints in total_points.items():
+      text_list += (f"{school} has {tpoints} points. \n")
+    self.text_2.text = ("".join(text_list))
 
 
+
+
+  
 
   def create_datagrids(self,event_list,schools):
     gender = self.dropdown_menu_1.selected_value
@@ -78,12 +109,10 @@ class Form1(Form1Template):
 
     self.dict_data = anvil.server.call("call_pr_display",schools,event_list,gender)
 
-    event_points = {}
     self.event_grids = {}
     self.event_panels = {}
     for event in event_list:
       df = self.dict_data[event]
-      school_points = {School:0 for School in schools}
       grid = DataGrid()
       self.event_grids[event] = grid
       self.column_panel_1.add_component(grid)
@@ -104,27 +133,22 @@ class Form1(Form1Template):
         {
           **row,
           "Rank": i + 1,
-          "Points": 5 if i == 0 else 3 if i == 1 else 1 if i == 2 else 0
+          "Points": (5 if i == 0 else 0) if event in relay_events else (5 if i == 0 else 3 if i == 1 else 1 if i == 2 else 0)
         }
         for i, row in enumerate(df)
       ]
 
-      score_limit = 1 if event in relay_events else 3
-
-      for row in rp.items[:score_limit]:
-        school = row["School"]
-        if school in school_points:
-          school_points[school] += row["Points"]
-          
       grid.add_component(rp)
       self.event_panels[event] = rp
-      event_points[event] = school_points
-    return("",event_points)
 
 
+    return("")
+
+
+
+
+  
   def add_tables(self):
-    self.text_3.text =''
-    total_points = {}
     event_list = list(filter(lambda x:x is not None,anvil.server.call("count_events")))
 
     event_list = [e for e in event_list if e not in extra_events]
@@ -142,31 +166,16 @@ class Form1(Form1Template):
     if self.button_6.appearance == "outlined":
       event_list = [e for e in event_list if e not in jumping_events]
 
-    empty_o_not,event_points_dict = self.create_datagrids(event_list,school_list)
+    empty_o_not = self.create_datagrids(event_list,school_list)
 
     if empty_o_not != "empty":
+      self.count_points()
       
-      for event,tallies in event_points_dict.items():
-        event_text_list = []
-        for school,points in tallies.items():
-          
-          total_points[school] = total_points.get(school,0) + points
-          event_text_list += (f"-----{school} {points} \n")
-        self.text_3.text += (f"{event} -\n {(''.join(event_text_list))}")
 
 
 
 
-
-      winning_school = max(total_points, key=total_points.get)
-      self.rich_text_1.content = (f"{winning_school} wins.")
-
-      text_list = []
-      for school,tpoints in total_points.items():
-        text_list += (f"{school} has {tpoints} points. \n")
-      self.text_2.text = ("".join(text_list))
-
-
+  
   def update_row(self,updated_row,**event_args):
     event = updated_row["Length"]
     grid = self.event_grids[event]
@@ -200,7 +209,7 @@ class Form1(Form1Template):
 
     self.event_panels[event] = rp
 
-    score_limit = 1 if event in relay_events else 3
+    self.count_points()
 
 
     
