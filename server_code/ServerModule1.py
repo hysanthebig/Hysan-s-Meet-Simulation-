@@ -58,7 +58,7 @@ def time_to_seconds(time):
 @anvil.server.callable
 def filter(df,sort_by,schoollist,lengthlist,gender):
   start = time.time()
-  print(gender)
+
   
   readmask = pd.Series(True, index=df.index)
   school_mask = pd.Series(False, index=df.index)
@@ -126,20 +126,18 @@ def count_events():
   
 @anvil.server.callable
 def re_sort(dictionary):
+  start = time.time()
   df = tabler(dictionary)
   length = df["Length"].iloc[0]
-  print(length)
-  print(field_events_list)
-
-
-
   if length in field_events_list:
-    print("hi")
     field_df = df.sort_values(by = ["Time"], key = lambda x:x.str.replace("m","").str.strip().astype(float), ascending = False)
     field_pr_rows = field_df.to_dict(orient="records")
-    return(field_pr_rows)    
+    return(field_pr_rows)
   else:
     df_pr = df.sort_values(by = ["time_seconds"])
     pr_rows = df_pr.to_dict(orient="records")
+    end = time.time()
+    print(f"resort {end-start:.4f}")
     return(pr_rows)
+  
   
