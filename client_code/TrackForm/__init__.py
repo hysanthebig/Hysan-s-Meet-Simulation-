@@ -1,4 +1,4 @@
-from ._anvil_designer import Form1Template
+from ._anvil_designer import TrackFormTemplate
 from .RowTemplate2 import RowTemplate2
 from anvil import *
 import anvil.tables as tables
@@ -19,9 +19,7 @@ jumping_events = ['High Jump','Long Jump', 'Triple Jump']
 extra_events = ['4x200 Relay',"4x800 Relay","4x1600 Relay","SMR 800m","SMR 1600m","DMR 4000m"]
 
 
-class Form1(Form1Template):
-  
-  
+class TrackForm(TrackFormTemplate):
   def __init__(self, **properties):
     # Set Form properties and Data Bindings.
     anvil.server.call('field_event','''34' 7.5"''')

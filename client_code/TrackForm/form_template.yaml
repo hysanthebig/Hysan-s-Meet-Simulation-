@@ -7,18 +7,18 @@ components_by_slot:
     type: ColumnPanel
   - components:
     - name: repeating_panel_1
-      properties: {item_template: Form1.RowTemplate2}
+      properties: {item_template: TrackForm.RowTemplate2}
       type: RepeatingPanel
     layout_properties: {}
     name: data_grid_1
     properties:
       columns:
-      - {data_key: Rank, id: EBBHGZ, title: Event}
-      - {data_key: School, expand: false, id: MXZVXR, title: School, width: 80.3751220703125}
-      - {data_key: Runner, id: FBVNNS, title: Runner}
-      - {data_key: Grade, expand: false, id: PMTQHI, title: Grade, width: 48.90447998046875}
-      - {data_key: Length, expand: false, id: QAJMWO, title: Length, width: 49.921142578125}
-      - {data_key: Time, expand: false, id: NRRRRS, title: Time, width: 88.7852783203125}
+      - {data_key: Rank, expand: false, id: EBBHGZ, title: Event, width: 55.09759521484375}
+      - {data_key: School, expand: false, id: MXZVXR, title: School, width: 54.47357177734375}
+      - {data_key: Runner, expand: false, id: FBVNNS, title: Runner, width: 76.45965576171875}
+      - {data_key: Grade, expand: false, id: PMTQHI, title: Grade, width: 67.9178466796875}
+      - {data_key: Length, expand: false, id: QAJMWO, title: Length, width: 93.1190185546875}
+      - {data_key: Time, expand: false, id: NRRRRS, title: Time, width: 85.9266357421875}
       - {data_key: Points, id: LOEPPQ, title: Points}
     type: DataGrid
   navigation:

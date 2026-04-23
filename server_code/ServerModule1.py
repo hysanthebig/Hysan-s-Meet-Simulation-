@@ -36,7 +36,7 @@ def time_to_seconds(time):
   return time_seconds
 
 
-@anvil.server.callable
+
 def filter(df,sort_by,schoollist,lengthlist,gender):
   start = time.time()
 
@@ -80,8 +80,6 @@ def pr_display(df,lengthlist,schoollist,gender):
   if df_pr is None:
     return None
   length = lengthlist[0]
-
-  
 
   if length in field_events_list:
     field_df = df_pr.sort_values(by = ["Time"], key = lambda x:x.str.replace("m","").str.strip().astype(float), ascending = False)
