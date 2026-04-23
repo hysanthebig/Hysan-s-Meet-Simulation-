@@ -26,4 +26,3 @@ unique_ids:
   server_modules:
     ServerModule1: '1774882477898687971029912.5898'
     athletnet_csv_loader: '1775956445885105700006310.7637'
-    csv_less_data_loader: '1774884985641746575249070.7479'

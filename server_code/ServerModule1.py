@@ -12,35 +12,13 @@ import time
 
 field_events_list = ['Shot Put', 'Discus', 'High Jump', 'Pole Vault', 'Long Jump', 'Triple Jump']
 print("connected server module")
-def tabler(rows):
-  start = time.time()
-  data_list = []
-  try:
-    for r in rows:
-      data_list.append({
-        "Runner": r["Runner"],
-        "Race": r["Race"],
-        "Grade": r["Grade"],
-        "Date":r["Date"],
-        "Time":r["Time"],
-        "time_seconds":r["time_seconds"],
-        "Length":r["Length"],
-        "School":r['School'],
-        "Gender":r['Gender']
-      })
-    df = pd.DataFrame(data_list)
-    end = time.time()
-    print(f"filter {end-start:.4f}")
-    return df
-  except TypeError:
-    print("1")
 
 def table_into_df(sport):
   if sport == "XC":
     rows = app_tables.datatable.search()
   if sport == "Track":
     rows = app_tables.athletic_table.search()
-  return tabler(rows)
+  return pd.DataFrame(rows)
   
 def seconds_to_mintunes(seconds):
   mint = int(seconds // 60)
@@ -130,7 +108,7 @@ def count_events():
 @anvil.server.callable
 def re_sort(dictionary):
   start = time.time()
-  df = tabler(dictionary)
+  df = pd.DataFrame(dictionary)
   length = df["Length"].iloc[0]
   if length in field_events_list:
     field_df = df.sort_values(by = ["Time"], key = lambda x:x.str.replace("m","").str.strip().astype(float), ascending = False)
