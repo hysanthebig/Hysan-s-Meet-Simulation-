@@ -13,6 +13,7 @@ import time
 field_events_list = ['Shot Put', 'Discus', 'High Jump', 'Pole Vault', 'Long Jump', 'Triple Jump']
 print("connected server module")
 def tabler(rows):
+  start = time.time()
   data_list = []
   try:
     for r in rows:
@@ -28,6 +29,8 @@ def tabler(rows):
         "Gender":r['Gender']
       })
     df = pd.DataFrame(data_list)
+    end = time.time()
+    print(f"filter {end-start:.4f}")
     return df
   except TypeError:
     print("1")
