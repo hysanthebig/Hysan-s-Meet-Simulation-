@@ -15,9 +15,9 @@ print("connected server module")
 
 def table_into_df(sport):
   if sport == "XC":
-    rows = app_tables.datatable.search()
+    rows = app_tables.xc_table.search()
   if sport == "Track":
-    rows = app_tables.athletic_table.search()
+    rows = app_tables.track_table.search()
   return pd.DataFrame(rows)
   
 def seconds_to_mintunes(seconds):
@@ -92,7 +92,10 @@ def pr_display(df,lengthlist,schoollist,gender):
 
 @anvil.server.callable
 def call_pr_display(school_list,event_list,gender):
-  df = table_into_df("Track")
+  if event_list == "XC":
+    df = table_into_df("XC")
+  else:
+    df = table_into_df("Track")
   dfs = {event:filter(df,"Runner",school_list,[event],gender) for event in event_list}
   finished_df_dict = {event:pr_display(dfs[event],[event],school_list,gender) for event in event_list}
   return finished_df_dict
@@ -100,7 +103,7 @@ def call_pr_display(school_list,event_list,gender):
   
 @anvil.server.callable
 def count_events():
-  events = list(dict.fromkeys([r['Length'] for r in app_tables.athletic_table.search()]))
+  events = list(dict.fromkeys([r['Length'] for r in app_tables.track_table.search()]))
   return events
   
 @anvil.server.callable

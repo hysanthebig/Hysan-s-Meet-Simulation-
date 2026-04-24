@@ -14,7 +14,6 @@ school_list = []
 class CrossCountryForm(CrossCountryFormTemplate):
   def __init__(self, **properties):
     # Set Form properties and Data Bindings.
-    anvil.server.call("field_event", '''34' 7.5"''')
     self.init_components(**properties)
     if 1 == 0:
       anvil.server.call("main")
@@ -44,29 +43,22 @@ class CrossCountryForm(CrossCountryFormTemplate):
 
   def count_points(self):
     self.text_3.text = ""
-    event_points = {}
-    total_points = {}
     for event, panel in self.event_panels.items():
       school_points = {School: 0 for School in school_list}
-
-      for row in panel.items[:3]:
+      school_count = {School: 0 for School in school_list}
+      for row in panel.items:
         school = row["School"]
-        if school in school_points:
+        if school_count[school] < 5:
           school_points[school] += row["Points"]
-        event_points[event] = school_points
 
-    for event, tallies in event_points.items():
-      event_text_list = []
-      for school, points in tallies.items():
-        total_points[school] = total_points.get(school, 0) + points
-        event_text_list += f"-----{school} {points} \n"
-      self.text_3.text += f"{event} -\n {(''.join(event_text_list))}"
 
-    winning_school = max(total_points, key=total_points.get)
+
+
+    winning_school = min(school_points, key=school_points.get)
     self.rich_text_1.content = f"{winning_school} wins."
 
     text_list = []
-    for school, tpoints in total_points.items():
+    for school, tpoints in school_points.items():
       text_list += f"{school} has {tpoints} points. \n"
     self.text_2.text = "".join(text_list)
 
@@ -74,6 +66,7 @@ class CrossCountryForm(CrossCountryFormTemplate):
     gender = self.dropdown_menu_1.selected_value
     if gender is None:
       gender = "Male"
+    event_list = "3200 Meters"
 
     self.dict_data = anvil.server.call("call_pr_display", schools, event_list, gender)
 
@@ -145,7 +138,7 @@ class CrossCountryForm(CrossCountryFormTemplate):
       {
         **row,
         "Rank": i + 1,
-        "Points": 5 if i == 0 else 3 if i == 1 else 1 if i == 2 else 0,
+        "Points": i + 1
       }
       for i, row in enumerate(new_df)
     ]
