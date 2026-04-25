@@ -64,7 +64,7 @@ def import_csf_to_table():
       measured_result = row["Time"]
       row["Time"] = field_event(measured_result)
 
-    app_tables.athletic_table.add_row(
+    app_tables.track_table.add_row(
       School = row["School"],Runner=row["Runner"],Race=row["Race"],Grade=row["Grade"],Gender = row['Gender'],Time=row["Time"],Date=row["Date"],Length=row["Length"],time_seconds = row["time_seconds"])
   print("Completed")
   return "Done"
