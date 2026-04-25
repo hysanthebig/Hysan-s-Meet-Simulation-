@@ -16,4 +16,5 @@ unique_ids:
   scripts: {}
   server_modules:
     ServerModule1: '1774882477898687971029912.5898'
+    api_paster: '1777134944940389315749599.657'
     athletnet_csv_loader: '1775956445885105700006310.7637'
