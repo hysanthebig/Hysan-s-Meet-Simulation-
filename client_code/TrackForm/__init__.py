@@ -22,7 +22,6 @@ extra_events = ['4x200 Relay',"4x800 Relay","4x1600 Relay","SMR 800m","SMR 1600m
 class TrackForm(TrackFormTemplate):
   def __init__(self, **properties):
     # Set Form properties and Data Bindings.
-    anvil.server.call('field_event','''34' 7.5"''')
     self.init_components(**properties)
     if 1 == 0:
       anvil.server.call('main')
@@ -37,6 +36,7 @@ class TrackForm(TrackFormTemplate):
     ##### import athletnet csv to table
     if 1 == 0:
       anvil.server.call('import_csv_caller')
+
 
 
 
@@ -104,8 +104,8 @@ class TrackForm(TrackFormTemplate):
     gender = self.dropdown_menu_1.selected_value
     if gender is None:
       gender = "Male"
-
-    self.dict_data = anvil.server.call("call_pr_display",schools,event_list,gender)
+    sport = "Track"
+    self.dict_data = anvil.server.call("call_pr_display",schools,event_list,gender,sport)
 
     self.event_grids = {}
     self.event_panels = {}

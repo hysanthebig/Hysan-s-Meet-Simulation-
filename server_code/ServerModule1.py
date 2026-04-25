@@ -91,8 +91,8 @@ def pr_display(df,lengthlist,schoollist,gender):
     return(pr_rows)
 
 @anvil.server.callable
-def call_pr_display(school_list,event_list,gender):
-  if event_list == "XC":
+def call_pr_display(school_list,event_list,gender,sport):
+  if sport == "XC":
     df = table_into_df("XC")
   else:
     df = table_into_df("Track")
@@ -121,5 +121,4 @@ def re_sort(dictionary):
     end = time.time()
     print(f"resort {end-start:.4f}")
     return(pr_rows)
-  
   

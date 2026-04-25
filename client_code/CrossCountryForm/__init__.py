@@ -15,19 +15,8 @@ class CrossCountryForm(CrossCountryFormTemplate):
   def __init__(self, **properties):
     # Set Form properties and Data Bindings.
     self.init_components(**properties)
-    if 1 == 0:
-      anvil.server.call("main")
 
-      # uni check
-    if 1 == 0:
-      anvil.server.call("launch_uni_check")
-      ######ONLY USE ONCE ERROR TABLE HAS BEEN CHECKED
-    if 1 == 0:
-      anvil.server.call("add_error_table_to_correct")
-
-    ##### import athletnet csv to table
-    if 1 == 0:
-      anvil.server.call("import_csv_caller")
+    
 
     # Any code you write here will run before the form opens.
 
@@ -66,9 +55,9 @@ class CrossCountryForm(CrossCountryFormTemplate):
     gender = self.dropdown_menu_1.selected_value
     if gender is None:
       gender = "Male"
-    event_list = "3200 Meters"
-
-    self.dict_data = anvil.server.call("call_pr_display", schools, event_list, gender)
+    event_list = ["3"]
+    sport = "XC"
+    self.dict_data = anvil.server.call("call_pr_display", schools, event_list, gender,sport)
 
     self.event_grids = {}
     self.event_panels = {}

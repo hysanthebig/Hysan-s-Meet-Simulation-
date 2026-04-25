@@ -1,0 +1,26 @@
+components:
+- components:
+  - components:
+    - layout_properties: {slot: card-content-container-slot}
+      name: heading_1
+      properties: {text: DEBUGGING FORM}
+      type: form:dep_lin1x4oec0ytd:_Components.Heading
+    layout_properties: {slot: card-content-slot}
+    name: card_content_container_1
+    properties: {}
+    type: form:dep_lin1x4oec0ytd:_Components.Card.CardContentContainer
+  layout_properties: {grid_position: 'QNGAUV,BXTIIJ'}
+  name: card_1
+  properties: {}
+  type: form:dep_lin1x4oec0ytd:_Components.Card
+- layout_properties: {grid_position: 'QNGAUV,PBRRAK IRJGVI,EHUBVG'}
+  name: link_1
+  properties: {text: go to this link and copy}
+  type: form:dep_lin1x4oec0ytd:_Components.Link
+- event_bindings: {}
+  layout_properties: {grid_position: 'QNGAUV,PBRRAK UWDBVN,ETCUIA'}
+  name: text_box_1
+  properties: {}
+  type: form:dep_lin1x4oec0ytd:_Components.TextInput.TextBox
+container: {type: ColumnPanel}
+is_package: true
