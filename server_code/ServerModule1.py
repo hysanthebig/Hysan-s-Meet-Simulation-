@@ -37,7 +37,7 @@ def time_to_seconds(time):
 
 
 
-def filter(df,sort_by,schoollist,lengthlist,gender):
+def filter(df,sort_by,schoollist,lengthlist,gender,grade):
   start = time.time()
 
   
@@ -45,22 +45,27 @@ def filter(df,sort_by,schoollist,lengthlist,gender):
   school_mask = pd.Series(False, index=df.index)
   length_mask = pd.Series(False,index = df.index)
   gender_mask = pd.Series(False,index = df.index)
+  grade_mask = pd.Series(True,index = df.index)
     ####################Filter#######################
 
   school_mask = df['School'].str.lower().isin([r.lower() for r in schoollist])
   if len(schoollist) == 0:
     school_mask = pd.Series(True,index =df.index)
   
-  
   length_mask = df['Length'].str.lower().isin([r.lower() for r in lengthlist])
   if len(lengthlist) == 0:
     length_mask = pd.Series(True,index =df.index)
+
+  if grade == None:
+    grade_mask = df['Grade'].str.lower().isin([r.lower() for r in schoollist])
+
 
   gender_mask = df['Gender'].str.lower() == gender.strip().lower()
 
 
   
-  readmask = readmask & school_mask & length_mask & gender_mask
+  readmask = readmask & school_mask & length_mask & gender_mask &
+  
   
   df_filtered = df.loc[readmask]
   df_filtered = df_filtered.sort_values(by=[sort_by])
@@ -75,8 +80,8 @@ def filter(df,sort_by,schoollist,lengthlist,gender):
 
   
 
-def pr_display(df,lengthlist,schoollist,gender):
-  df_pr = filter(df,"Runner",schoollist,lengthlist,gender)
+def pr_display(df,lengthlist,schoollist,gender,grade):
+  df_pr = filter(df,"Runner",schoollist,lengthlist,gender,grade)
   if df_pr is None:
     return None
   length = lengthlist[0]

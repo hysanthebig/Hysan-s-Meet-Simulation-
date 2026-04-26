@@ -116,6 +116,28 @@ components_by_slot:
     name: flow_panel_3
     properties: {}
     type: FlowPanel
+  - components:
+    - event_bindings: {}
+      layout_properties: {}
+      name: button_1
+      properties: {text: 9th}
+      type: form:dep_lin1x4oec0ytd:_Components.Button
+    - layout_properties: {}
+      name: button_3
+      properties: {text: 11th}
+      type: form:dep_lin1x4oec0ytd:_Components.Button
+    - layout_properties: {}
+      name: button_2
+      properties: {enabled: true, text: 10th}
+      type: form:dep_lin1x4oec0ytd:_Components.Button
+    - layout_properties: {}
+      name: button_4
+      properties: {text: 12th}
+      type: form:dep_lin1x4oec0ytd:_Components.Button
+    layout_properties: {}
+    name: flow_panel_2
+    properties: {}
+    type: FlowPanel
   - data_bindings: []
     event_bindings: {}
     layout_properties: {}

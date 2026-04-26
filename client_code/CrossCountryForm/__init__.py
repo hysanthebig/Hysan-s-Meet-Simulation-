@@ -38,6 +38,7 @@ class CrossCountryForm(CrossCountryFormTemplate):
       for row in panel.items:
         school = row["School"]
         if school_count[school] < 5:
+          school_count[school] += 1
           school_points[school] += row["Points"]
 
 
@@ -51,13 +52,13 @@ class CrossCountryForm(CrossCountryFormTemplate):
       text_list += f"{school} has {tpoints} points. \n"
     self.text_2.text = "".join(text_list)
 
-  def create_datagrids(self, event_list, schools):
+  def create_datagrids(self, event_list, schools,grades):
     gender = self.dropdown_menu_1.selected_value
     if gender is None:
       gender = "Male"
     event_list = ["3"]
     sport = "XC"
-    self.dict_data = anvil.server.call("call_pr_display", schools, event_list, gender,sport)
+    self.dict_data = anvil.server.call("call_pr_display", schools, event_list, gender,sport,grades)
 
     self.event_grids = {}
     self.event_panels = {}
@@ -98,7 +99,21 @@ class CrossCountryForm(CrossCountryFormTemplate):
     event_list = list(
       filter(lambda x: x is not None, anvil.server.call("count_events"))
     )
-    empty_o_not = self.create_datagrids(event_list, school_list)
+
+    grade_list = []
+
+    if self.button_1.appearance == "":
+      grade_list.append("9")
+    if self.button_2.appearance == "filled":
+      grade_list.append("10")
+    if self.button_3.appearance == "filled":
+      grade_list.append("11")
+    if self.button_4.appearance == "filled":
+      grade_list.append("12")
+
+    print(event_list)
+      
+    empty_o_not = self.create_datagrids(event_list, school_list,gradelist)
 
     if empty_o_not != "empty":
       self.count_points()
@@ -193,4 +208,30 @@ class CrossCountryForm(CrossCountryFormTemplate):
     self.column_panel_1.clear()
     self.add_tables()
 
-  
+  @handle("button_1", "click")
+  def button_1_click(self, **event_args):
+    if self.button_1.appearance == "filled":
+      self.button_1.appearance = "outlined"
+    else:
+      self.button_1.appearance = "filled"
+
+  @handle("button_2", "click")
+  def button_2_click(self, **event_args):
+    if self.button_2.appearance == "filled":
+      self.button_2.appearance = "outlined"
+    else:
+      self.button_2.appearance = "filled"
+
+  @handle("button_3", "click")
+  def button_3_click(self, **event_args):
+    if self.button_3.appearance == "filled":
+      self.button_3.appearance = "outlined"
+    else:
+      self.button_3.appearance = "filled"
+
+  @handle("button_4", "click")
+  def button_4_click(self, **event_args):
+    if self.button_4.appearance == "filled":
+      self.button_4.appearance = "outlined"
+    else:
+      self.button_4.appearance = "filled"
