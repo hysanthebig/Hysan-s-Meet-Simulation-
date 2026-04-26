@@ -56,7 +56,7 @@ class CrossCountryForm(CrossCountryFormTemplate):
     gender = self.dropdown_menu_1.selected_value
     if gender is None:
       gender = "Male"
-    event_list = ["3"]
+
     sport = "XC"
     self.dict_data = anvil.server.call("call_pr_display", schools, event_list, gender,sport,grades)
 
@@ -96,13 +96,11 @@ class CrossCountryForm(CrossCountryFormTemplate):
     return ""
 
   def add_tables(self):
-    event_list = list(
-      filter(lambda x: x is not None, anvil.server.call("count_events"))
-    )
+    event_list = ["3"]
 
     grade_list = []
 
-    if self.button_1.appearance == "":
+    if self.button_1.appearance == "filled":
       grade_list.append("9")
     if self.button_2.appearance == "filled":
       grade_list.append("10")
@@ -111,9 +109,9 @@ class CrossCountryForm(CrossCountryFormTemplate):
     if self.button_4.appearance == "filled":
       grade_list.append("12")
 
-    print(event_list)
+    print(grade_list)
       
-    empty_o_not = self.create_datagrids(event_list, school_list,gradelist)
+    empty_o_not = self.create_datagrids(event_list, school_list,grade_list)
 
     if empty_o_not != "empty":
       self.count_points()
@@ -235,3 +233,7 @@ class CrossCountryForm(CrossCountryFormTemplate):
       self.button_4.appearance = "outlined"
     else:
       self.button_4.appearance = "filled"
+
+  @handle("button_5", "click")
+  def button_5_click(self, **event_args):
+    open_form("TrackForm")

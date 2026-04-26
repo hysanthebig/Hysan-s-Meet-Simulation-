@@ -105,7 +105,7 @@ class TrackForm(TrackFormTemplate):
     if gender is None:
       gender = "Male"
     sport = "Track"
-    self.dict_data = anvil.server.call("call_pr_display",schools,event_list,gender,sport)
+    self.dict_data = anvil.server.call("call_pr_display",schools,event_list,gender,sport,None)
 
     self.event_grids = {}
     self.event_panels = {}
@@ -310,6 +310,10 @@ class TrackForm(TrackFormTemplate):
       self.button_6.appearance = "outlined"
     else:
       self.button_6.appearance = "filled"
+
+  @handle("button_7", "click")
+  def button_7_click(self, **event_args):
+    open_form("CrossCountryForm")
 
 
 
