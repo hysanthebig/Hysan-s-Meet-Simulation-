@@ -16,9 +16,9 @@ dependencies:
   resolution_hints: {app_id: 4UK6WHQ6UX7AKELK, name: Material 3 Theme, package_name: m3}
   version: {version_tag: v1.2.6}
 metadata: {title: Meet Simulator}
-name: Meet Test
+name: Hacienda League Simulator
 native_deps: null
-package_name: Meet_Test
+package_name: Hacienda_League_Simulator
 runtime_options:
   client_version: '3'
   server_spec: {base: python310-standard}
