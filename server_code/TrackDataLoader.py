@@ -123,6 +123,7 @@ def import_all_records():
     for i in range(0, len(lst), size):
       yield lst[i:i+size]
 
+  app_tables.track_table.delete_all_rows()
   for chunk in chunked(all_records, BATCH_SIZE):
     print(chunk)
     app_tables.track_table.add_rows(chunk)
