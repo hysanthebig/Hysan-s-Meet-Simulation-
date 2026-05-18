@@ -108,7 +108,7 @@ class TrackForm(TrackFormTemplate):
     if gender is None:
       gender = "Male"
     sport = "Track"
-    self.dict_data = anvil.server.call("call_pr_display",schools,event_list,gender,sport,None)
+    self.dict_data = anvil.server.call("call_pr_display",schools,event_list,gender,sport,'')
 
     self.event_grids = {}
     self.event_panels = {}
