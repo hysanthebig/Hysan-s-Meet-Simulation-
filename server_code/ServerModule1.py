@@ -48,7 +48,6 @@ def filter(df,sort_by,schoollist,lengthlist,gender,gradelist):
 
 
   df_filtered = df.loc[readmask]
-  print(df_filtered)
   df_filtered = df_filtered.sort_values(by=[sort_by])
 
 
