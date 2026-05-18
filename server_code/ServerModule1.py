@@ -39,36 +39,14 @@ def time_to_seconds(time):
 
 def filter(df,sort_by,schoollist,lengthlist,gender,gradelist):
   start = time.time()
-
-
-  readmask = pd.Series(True, index=df.index)
-  school_mask = pd.Series(False, index=df.index)
-  length_mask = pd.Series(False,index = df.index)
-  gender_mask = pd.Series(False,index = df.index)
-  grade_mask = pd.Series(True,index = df.index)
   ####################Filter#######################
-
-  school_mask = df['School'].str.lower().isin([r.lower() for r in schoollist])
-  if len(schoollist) == 0:
-    school_mask = pd.Series(True,index =df.index)
-
-  length_mask = df['Length'].str.lower().isin([r.lower() for r in lengthlist])
-  if len(lengthlist) == 0:
-    length_mask = pd.Series(True,index =df.index)
-
-  if gradelist is not None:
-    grade_mask = df['Grade'].str.lower().isin([r.lower() for r in gradelist])
-
-
-  gender_mask = df['Gender'].str.lower() == gender.strip().lower()
-
-
-
-  readmask = readmask & school_mask & length_mask & gender_mask & grade_mask
-
-
-
-
+  readmask = (
+    ((df['School'].str.lower().isin([r.lower() for r in schoollist])| (schoollist == "")) &
+    (df['Length'].str.lower().isin([r.lower() for r in lengthlist])| (schoollist == "") &
+    (df['Grade'].str.lower().isin([r.lower() for r in gradelist])| (schoollist == "") &
+    (df['Gender'].str.lower() == gender.strip().lower())
+  )
+     
   df_filtered = df.loc[readmask]
   df_filtered = df_filtered.sort_values(by=[sort_by])
 
