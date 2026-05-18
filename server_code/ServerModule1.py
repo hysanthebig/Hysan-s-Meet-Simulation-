@@ -41,11 +41,10 @@ def filter(df,sort_by,schoollist,lengthlist,gender,gradelist):
   start = time.time()
   ####################Filter#######################
   readmask = (
-    ((df['School'].str.lower().isin([r.lower() for r in schoollist])| (schoollist == "")) &
-    (df['Length'].str.lower().isin([r.lower() for r in lengthlist])| (schoollist == "") &
-    (df['Grade'].str.lower().isin([r.lower() for r in gradelist])| (schoollist == "") &
-    (df['Gender'].str.lower() == gender.strip().lower())
-  )
+    ((df['School'].str.lower().isin([r.lower() for r in schoollist]))| (schoollist == ")) &
+    ((df['Length'].str.lower().isin([r.lower() for r in lengthlist]))| (lengthlist == None)) &
+    ((df['Grade'].astype(str).str.lower().isin([r.lower() for r in gradelist]))| (gradelist == None)) &
+    ((df['Gender'].str.lower() == gender.strip().lower()))| (gender == ""))
      
   df_filtered = df.loc[readmask]
   df_filtered = df_filtered.sort_values(by=[sort_by])
