@@ -35,11 +35,14 @@ class CrossCountryForm(CrossCountryFormTemplate):
     for event, panel in self.event_panels.items():
       school_points = {School: 0 for School in school_list}
       school_count = {School: 0 for School in school_list}
+      scoring_runners = []
       for row in panel.items:
         school = row["School"]
         if school_count[school] < 5:
           school_count[school] += 1
           school_points[school] += row["Points"]
+          scoring_runners.append([school,row["Runner"],row["Rank"]])
+      
 
 
 
