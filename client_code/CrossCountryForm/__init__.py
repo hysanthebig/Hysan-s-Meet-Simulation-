@@ -35,13 +35,14 @@ class CrossCountryForm(CrossCountryFormTemplate):
     for event, panel in self.event_panels.items():
       school_points = {School: 0 for School in school_list}
       school_count = {School: 0 for School in school_list}
-      scoring_runners = []
+      scoring_runners = {School:[] for School in school_list}
       for row in panel.items:
         school = row["School"]
         if school_count[school] < 5:
           school_count[school] += 1
           school_points[school] += row["Points"]
-          scoring_runners.append([school,row["Runner"],row["Rank"]])
+          scoring_runners[school].append([row["Runner"],row["Points"]])
+
       
 
 
@@ -53,6 +54,8 @@ class CrossCountryForm(CrossCountryFormTemplate):
     text_list = []
     for school, tpoints in school_points.items():
       text_list += f"{school} has {tpoints} points. \n"
+      for runner in scoring_runners[school]:
+        text_list += ("-------".join(*scoring_runners))
     self.text_2.text = "".join(text_list)
 
   def create_datagrids(self, event_list, schools,grades):
