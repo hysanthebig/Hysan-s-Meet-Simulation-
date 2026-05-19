@@ -37,16 +37,23 @@ def time_to_seconds(time):
 
 
 
-def filter(df,sort_by,schoollist,lengthlist,gender,gradelist):
+def filter(df,sort_by,schoollist = "",lengthlist= "",gender = "",gradelist =""):
   start = time.time()
   ####################Filter#######################
-  readmask = (
-    ((df['School'].str.lower().isin([r.lower() for r in schoollist]))| (schoollist is None)) &
-    ((df['Length'].str.lower().isin([r.lower() for r in lengthlist]))| (lengthlist is None)) &
-    ((df['Grade'].astype(str).str.lower().isin([r.lower() for r in gradelist]))| (gradelist == '')) &
-    ((df['Gender'].str.lower() == gender.strip().lower()))| (gender is None))
+  readmask = pd.Series(True,index = df.index)
 
+  if schoollist:
+    readmask &= df["School"].isin(schoollist)
 
+  if gradelist:
+    readmask &= df["Grade"].isin(gradelist)
+    
+  if gender:
+    readmask &= df["Gender"].isin([gender])
+    
+  if lengthlist:
+    readmask &= df["Length"].isin(lengthlist) 
+     
   df_filtered = df.loc[readmask]
   df_filtered = df_filtered.sort_values(by=[sort_by])
 
