@@ -6,6 +6,7 @@ import anvil.tables.query as q
 from anvil.tables import app_tables
 import anvil.server
 import m3.components as m3
+import time
 
 global school_list
 school_list = []
@@ -71,6 +72,7 @@ class TrackForm(TrackFormTemplate):
 
   
   def count_points(self):
+    start = time.time()
     self.text_3.text = ''
     event_points = {}
     total_points = {}
@@ -79,9 +81,8 @@ class TrackForm(TrackFormTemplate):
       
       for row in panel.items[:3]:
         school = row["School"]
-        if school in school_points:
-          school_points[school] += row["Points"]
-        event_points[event] = school_points
+        school_points[school] += row["Points"]
+      event_points[event] = school_points
         
     for event,tallies in event_points.items():
       event_text_list = []
@@ -97,6 +98,7 @@ class TrackForm(TrackFormTemplate):
     for school,tpoints in total_points.items():
       text_list += (f"{school} has {tpoints} points. \n")
     self.text_2.text = ("".join(text_list))
+    print(f"count_points {((time.time())-start)}")
 
 
 
@@ -194,7 +196,7 @@ class TrackForm(TrackFormTemplate):
         row["Time"] = updated_row["Time"]
         row["time_seconds"] = updated_row["time_seconds"]
 
-    new_df = anvil.server.call("re_sort",df)    
+    new_df = anvil.server.call("re_sort",df,event)    
   
     rp.items = [
 

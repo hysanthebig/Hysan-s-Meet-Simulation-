@@ -37,7 +37,7 @@ def time_to_seconds(time):
 
 
 
-def filter(df,sort_by,schoollist = "",lengthlist= "",gender = "",gradelist =""):
+def filter(df,sort_by,schoollist = None,lengthlist= None,gender = None,gradelist =None):
   start = time.time()
   ####################Filter#######################
   readmask = pd.Series(True,index = df.index)
@@ -67,9 +67,8 @@ def filter(df,sort_by,schoollist = "",lengthlist= "",gender = "",gradelist =""):
 
 
 
-def pr_display(df,lengthlist,schoollist,gender):
+def pr_display(df,length):
 
-  length = lengthlist[0]
 
   if length in field_events_list:
     field_df = df.sort_values(by = ["Time"], key = lambda x:x.str.replace("m","").str.strip().astype(float), ascending = False)
@@ -87,8 +86,7 @@ def call_pr_display(school_list,event_list,gender,sport,grade):
   else:
     df = table_into_df("Track")
   dfs = {event:filter(df,"Runner",school_list,[event],gender,grade) for event in event_list}
-
-  finished_df_dict = {event:pr_display(dfs[event],[event],school_list,gender) for event in event_list}
+  finished_df_dict = {event:pr_display(dfs[event],event) for event in event_list}
   return finished_df_dict
 
 
