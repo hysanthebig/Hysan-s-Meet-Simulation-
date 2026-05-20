@@ -49,12 +49,6 @@ class TrackForm(TrackFormTemplate):
 
 
 
-
-
-
-
-
-
     # Any code you write here will run before the form opens.
 
 
@@ -230,7 +224,7 @@ class TrackForm(TrackFormTemplate):
       self.text_4.text = school_list
 
 
-  @handle("alta_loma_link", "click")
+  @handle("alta_bvfxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxloma_link", "click")
   def alta_loma_link_click(self, **event_args):
     if "Alta Loma" not in school_list:
       school_list.append("Alta Loma")
