@@ -175,15 +175,10 @@ class TrackForm(TrackFormTemplate):
   
   def update_row(self,updated_row,**event_args):
     event = updated_row["Length"]
-    grid = self.event_grids[event]
     panel = self.event_panels[event]
-    panel.remove_from_parent()
     if updated_row["Length"] not in field_events:
       updated_row["time_seconds"] = self.time_to_seconds(updated_row["Time"])
     df = self.dict_data[event]
-
-
-    rp = RepeatingPanel(item_template=RowTemplate2)
     
     for row in df:
       if row["Runner"] == updated_row["Runner"] and row["School"] == updated_row["School"]:
@@ -192,7 +187,7 @@ class TrackForm(TrackFormTemplate):
 
     new_df = anvil.server.call("re_sort",df,event)    
   
-    rp.items = [
+    panel.items = [
 
           {
             **row,
@@ -202,9 +197,6 @@ class TrackForm(TrackFormTemplate):
           for i, row in enumerate(new_df)
         ]
 
-    grid.add_component(rp)
-
-    self.event_panels[event] = rp
 
     self.count_points()
 

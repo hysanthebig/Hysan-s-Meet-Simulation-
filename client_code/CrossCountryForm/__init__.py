@@ -124,14 +124,10 @@ class CrossCountryForm(CrossCountryFormTemplate):
 
   def update_row(self, updated_row, **event_args):
     event = updated_row["Length"]
-    grid = self.event_grids[event]
     panel = self.event_panels[event]
-    panel.remove_from_parent()
+  
     updated_row["time_seconds"] = self.time_to_seconds(updated_row["Time"])
     df = self.dict_data[event]
-
-    rp = RepeatingPanel(item_template=RowTemplate2)
-
     for row in df:
       if (
         row["Runner"] == updated_row["Runner"]
@@ -142,7 +138,7 @@ class CrossCountryForm(CrossCountryFormTemplate):
 
     new_df = anvil.server.call("re_sort", df)
 
-    rp.items = [
+    panel.items = [
       {
         **row,
         "Rank": i + 1,
@@ -151,9 +147,6 @@ class CrossCountryForm(CrossCountryFormTemplate):
       for i, row in enumerate(new_df)
     ]
 
-    grid.add_component(rp)
-
-    self.event_panels[event] = rp
 
     self.count_points()
 
