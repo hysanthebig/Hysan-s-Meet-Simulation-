@@ -15,7 +15,7 @@ field_events_list = [
   'Pole Vault', 'Long Jump', 'Triple Jump'
 ]
 
-sport = "Track"
+sport = "track"
 
 
 # -------------------------
