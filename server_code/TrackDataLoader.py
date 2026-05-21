@@ -15,6 +15,8 @@ field_events_list = [
   'Pole Vault', 'Long Jump', 'Triple Jump'
 ]
 
+sport = "Track"
+
 
 # -------------------------
 # HELPERS
@@ -57,8 +59,12 @@ def get_records(row):
   team_id = row["team_id"]
   school = row["name"]
 
-  url = f"https://www.athletic.net/api/v1/TeamHome/GetTeamEventRecords?teamId={team_id}&seasonId=2026"
+  if sport == "track":
+    url = f"https://www.athletic.net/api/v1/TeamHome/GetTeamEventRecords?teamId={team_id}&seasonId=2026"
+  else:
+    url = f"https://www.athletic.net/api/v1/TeamHome/GetSeasonBest?teamId={team_id}&seasonId=2025"
 
+  
   res = requests.get(url, impersonate="chrome110")
 
   if res.status_code != 200:
