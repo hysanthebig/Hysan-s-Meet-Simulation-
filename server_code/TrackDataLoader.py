@@ -15,8 +15,6 @@ field_events_list = [
   'Pole Vault', 'Long Jump', 'Triple Jump'
 ]
 
-sport = "track"
-
 
 # -------------------------
 # HELPERS
@@ -55,9 +53,10 @@ def time_to_seconds(time_str):
 # -------------------------
 # FETCH FUNCTION
 # -------------------------
-def get_records(row):
+def get_records(row,sport):
   team_id = row["team_id"]
   school = row["name"]
+  print(sport)
 
   if sport == "track":
     url = f"https://www.athletic.net/api/v1/TeamHome/GetTeamEventRecords?teamId={team_id}&seasonId=2026"
@@ -68,27 +67,43 @@ def get_records(row):
   res = requests.get(url, impersonate="chrome110")
 
   if res.status_code != 200:
+    print("Error")
     return []
 
   data = res.json()
 
   records = []
+  if sport == "track":
+    for r in data.get("eventRecords", []):
+      name = f"{r['FirstName']} {r['LastName']}"
+      gender = "Female" if r["Gender"] == "F" else "Male"
+  
+      records.append({
+        "School": school,
+        "Runner": name,
+        "Gender": gender,
+        "Grade": r["GradeID"],
+        "Race": r["MeetName"],
+        "Time": r["Result"].replace("a", ""),
+        "Length": r["Event"],
+        "Date": r["EndDate"].replace("T00:00:00", ""),
+      })
+  else:
+    for r in data.get("results", []):
+      name = f"{r['FirstName']} {r['LastName']}"
+      gender = "Female" if r["GenderID"] == "F" else "Male"
 
-  for r in data.get("eventRecords", []):
-    name = f"{r['FirstName']} {r['LastName']}"
-    gender = "Female" if r["Gender"] == "F" else "Male"
-
-    records.append({
-      "School": school,
-      "Runner": name,
-      "Gender": gender,
-      "Grade": r["GradeID"],
-      "Race": r["MeetName"],
-      "Time": r["Result"].replace("a", ""),
-      "Length": r["Event"],
-      "Date": r["EndDate"].replace("T00:00:00", ""),
-    })
-
+      records.append({
+          "School": school,
+          "Runner": name,
+          "Gender": gender,
+          "Grade": r["ShortDesc"],
+          "Race": r["MeetName"],
+          "Time": r["Result"].replace("a", ""),
+          "Length": str(r["Distance"]),
+          "Date": r["MeetDate"].replace("T00:00:00", ""),
+        })
+  print(records)
   return records
 
 
@@ -96,7 +111,7 @@ def get_records(row):
 # MAIN PIPELINE
 # -------------------------
 @anvil.server.background_task
-def import_all_records():
+def import_all_records(sport):
 
   rows = list(app_tables.school_ids.search())
 
@@ -106,7 +121,7 @@ def import_all_records():
   # 1. PARALLEL SCRAPE
   # -------------------------
   with ThreadPoolExecutor(max_workers=MAX_WORKERS) as executor:
-    futures = [executor.submit(get_records, row) for row in rows]
+    futures = [executor.submit(get_records, row,sport) for row in rows]
 
     for future in as_completed(futures):
       result = future.result()
@@ -129,10 +144,16 @@ def import_all_records():
     for i in range(0, len(lst), size):
       yield lst[i:i+size]
 
-  app_tables.track_table.delete_all_rows()
-  for chunk in chunked(all_records, BATCH_SIZE):
-    print(chunk)
-    app_tables.track_table.add_rows(chunk)
+  if sport == "track":
+    app_tables.track_table.delete_all_rows()
+    for chunk in chunked(all_records, BATCH_SIZE):
+      print(chunk)
+      app_tables.track_table.add_rows(chunk)
+  else:
+    app_tables.xc_table.delete_all_rows()
+    for chunk in chunked(all_records, BATCH_SIZE):
+      print(chunk)
+      app_tables.xc_table.add_rows(chunk)
 
   print("DONE")
   return "Completed"
@@ -142,5 +163,5 @@ def import_all_records():
 # CALLABLE START FUNCTION
 # -------------------------
 @anvil.server.callable
-def start_import():
-  anvil.server.launch_background_task("import_all_records")
+def start_import(sport):
+  anvil.server.launch_background_task("import_all_records",sport)
