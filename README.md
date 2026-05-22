@@ -1,5 +1,4 @@
-This is my Meet Simulator made for simulating meets between my school and schools with the league. It uses Anvil to host the website because its free.It has both Track and XC capabilities. It takes Athletic.net records and compiles them into a Anvil Datatable. It then retrieves the data and compares it to the other schools, ranking, assigning points, and deciding a winner based of team PRs. 
-
+This is my Meet Simulator made for simulating meets between my school and schools with the league. It uses Anvil to host the website because its free.It has both Track and XC capabilities. It takes Athletic.net records and compiles them into a Anvil Datatable. It then retrieves the data and compares it to the other schools, ranking, assigning points, and deciding a winner based of team PRs.It also has a feature where you can simulate the meet, and then change what time certain runners run inorder to see how much faster they'd have to run for the team to win. It's pretty efficent for my standards, with the time it takes from start to end of "simulating" (just displaying PRs and adding points) one meet to be less than 3 seconds, with most of the time coming from client ui code as I've cut down and cleaned up the server code.
 
 
 
