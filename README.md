@@ -1,3 +1,8 @@
+This is my Meet Simulator made for simulating meets between my school and schools with the league. It uses Anvil to host the website because its free.It has both Track and XC capabilities. It takes Athletic.net records and compiles them into a Anvil Datatable. It then retrieves the data and compares it to the other schools, ranking, assigning points, and deciding a winner based of team PRs. 
+
+
+
+
 # About This [Anvil](https://anvil.works/?utm_source=github:app_README) App
 
 ### Build web apps with nothing but Python.
