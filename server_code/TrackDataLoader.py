@@ -61,7 +61,7 @@ def get_records(row,sport):
   if sport == "track":
     url = f"https://www.athletic.net/api/v1/TeamHome/GetTeamEventRecords?teamId={team_id}&seasonId=2026"
   else:
-    url = f"https://www.athletic.net/api/v1/TeamHome/GetSeasonBest?teamId={team_id}&seasonId=2025"
+    url = f"https://www.athletic.net/api/v1/TeamHome/GetSeasonBest?teamId={team_id}&seasonId=2026"
 
   
   res = requests.get(url, impersonate="chrome110")

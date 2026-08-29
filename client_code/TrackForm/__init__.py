@@ -39,7 +39,7 @@ class TrackForm(TrackFormTemplate):
       anvil.server.call('import_csv_caller')
 
     ######DATALOADER
-    if 1 == 0:
+    if 1 == 1:
       anvil.server.call('start_import',"XC")
 
 

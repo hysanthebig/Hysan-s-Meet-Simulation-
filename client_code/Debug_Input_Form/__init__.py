@@ -13,7 +13,7 @@ class Debug_Input_Form(Debug_Input_FormTemplate):
   sport = "XC"
 
 
-  year = "2025"
+  year = "2026"
 
   school_id_list = [["Colony", "1619"],
                   ["Alta Loma","1538"],
